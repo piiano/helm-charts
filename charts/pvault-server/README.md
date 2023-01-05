@@ -15,7 +15,10 @@ While these are the earliest versions that have been tested, it is possible that
 
 ## Installing the Chart
 
-Coming soon - helm repo add and run instructions
+```console
+helm repo add piiano https://piiano.github.io/helm-charts
+helm install piiano/pvault-server
+```
 
 ### Basic installation
 
@@ -30,7 +33,7 @@ helm upgrade --install \
   --set-string db.name=${DB_NAME} \
   --set-string app.license=${PVAULT_SERVICE_LICENSE} \
   --set-string log.customerIdentifier=my-company-name \
-  my-release ./pvault-server/ --create-namespace --namespace pvault
+  my-release piiano/pvault-server --create-namespace --namespace pvault
 ```
 
 ### AWS installation (EKS)
@@ -53,7 +56,7 @@ helm upgrade --install \
   --set-string log.customerIdentifier=my-company-name \
   --set-string serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=arn:aws:iam::123456789012:role/pvault-server-role \
   --set-string nodeSelector."node\.kubernetes\.io/instance-type"=${NODE_INSTANCE_TYPE} \
-  my-release ./pvault-server/ --create-namespace --namespace pvault
+  my-release piiano/pvault-server --create-namespace --namespace pvault
 ```
 
 ### Example installation walkthrough
@@ -73,7 +76,7 @@ helm upgrade --install db my-repo/postgresql --namespace postgres --create-names
 Next, run the following Helm command to install and connect Piiano Vault Server to the DB instance:
 
 ```console
-helm upgrade --install pvault-server ./pvault-server --namespace pvault --create-namespace \
+helm upgrade --install pvault-server piiano/pvault-server --namespace pvault --create-namespace \
     --set-string db.user=pvault \
     --set-string db.password=pvault \
     --set-string db.name=pvault \
