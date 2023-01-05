@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pvault-server.fullname" . }}
+  labels:
+    {{- include "pvault-server.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "pvault-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "pvault-server.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "pvault-server.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.dnsPolicy }}
+      dnsPolicy: {{ . | quote }}
+      {{- end }}
+      enableServiceLinks: false
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: pvault-port
+              containerPort: 8123
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/pvlt/1.0/data/info/health
+              port: pvault-port
+            periodSeconds: 10
+            failureThreshold: 120
+          readinessProbe:
+            httpGet:
+              path: /api/pvlt/1.0/data/info/health
+              port: pvault-port
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if or .Values.log.datadogAPMEnable .Values.dbCARootCertificate }}
+          env:
+          {{- if .Values.log.datadogAPMEnable }}
+            - name: DD_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP    
+          {{- end }}
+          {{- with .Values.dbCARootCertificate }}
+            - name: PGSSLROOTCERT
+              value: /etc/pvault/certs/db-ca-bundle.pem
+          {{- end }}
+          {{- end }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "pvault-server.fullname" . }}-env-vars
+          volumeMounts:
+          - name: pvault-system-toml-volume
+            mountPath: /etc/pvault/pvault.system.toml # TODO: Change to `/etc/pvault/conf.d` for Vault 1.1.0
+            subPath: pvault.system.toml               # TODO: Remove for Vault 1.1.0
+          - name: secret-db-password-volume
+            mountPath: /etc/pvault/secret/db_password
+          - name: secret-admin-api-key-volume
+            mountPath: /etc/pvault/secret/admin_api_key
+          - name: secret-license-volume
+            mountPath: /etc/pvault/secret/license
+          {{- if .Values.dbCARootCertificate}}
+          - name: db-ca-cert-volume
+            mountPath: /etc/pvault/certs
+          {{- end }}
+      volumes:
+      - name: pvault-system-toml-volume
+        configMap:
+          name:  {{ include "pvault-server.fullname" . }}-variables
+      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-db-password-volume" "existingSecret" .Values.db.existingPasswordSecret "existingSecretKey" .Values.db.existingPasswordSecretKey "defaultSecretKey" "pvault-db-password" "context" .) | indent 6 }}
+      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-admin-api-key-volume" "existingSecret" .Values.app.existingAdminAPIKeySecret "existingSecretKey" .Values.app.existingAdminAPIKeySecretKey "defaultSecretKey" "admin-api-key" "context" .) | indent 6 }}
+      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-license-volume" "existingSecret" .Values.app.existingLicenseSecret "existingSecretKey" .Values.app.existingLicenseSecretKey "defaultSecretKey" "license" "context" .) | indent 6 }}
+      {{- if .Values.dbCARootCertificate}}
+      - name: db-ca-cert-volume
+        configMap:
+          name:  {{ include "pvault-server.fullname" . }}-db-ca-cert
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
