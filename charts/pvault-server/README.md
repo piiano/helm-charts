@@ -35,6 +35,7 @@ Before installing Piiano Vault Server, you will need a running instance of Postg
 It is recommended to use a managed cloud provider Postgres installation such as RDS in AWS or CloudSQL in GCP. The simplest local installation mode will install Postgres for you (skip this step). 
 
 :warning: This installation is provided for testing purposes and is not meant for production. It is not backed up, not encrypted at REST, etc.
+The postgres is installed with ephemeral storage. We assume that most local experiments will be done with Docker Desktop and it has a limitation with PVC configuration. It implies that restarting the postgres will wipe its database and will require restarting the Vault as well.
 
  You can use the following Helm command to deploy Postgres to your cluster:
 
@@ -48,9 +49,6 @@ helm upgrade --install db my-repo/postgresql --namespace postgres --create-names
     --set primary.persistence.enabled=false 
 ```
 
-:::info
-The postgres is installed with ephemeral storage. We assume that most local experiments will be done with Docker Desktop and it has a limitation with PVC configuration. It implies that restarting the postgres will wipe its database and will require restarting the Vault as well.
-:::
 ### Simplest local installation
 
 Deploy Piiano Vault Server on your local Kubernetes cluster while also installing postgres as part of this process:
