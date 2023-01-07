@@ -179,10 +179,10 @@ affinity: {}
 ## Piiano Vault DB parameters.
 ## ref: https://piiano.com/docs/guides/configure/environment-variables#database
 db:
-  ## @param db.user Username for the database.
+  ## @param db.user Username for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.username`.
   ##
   user: "pvault"
-  ## @param db.password Password for the database.
+  ## @param db.password Password for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.password`.
   ##
   password: ""
   ## @param db.existingPasswordSecret The name of an existing secret containing the DB password.
@@ -194,10 +194,10 @@ db:
   ## Note: Only used when existingPasswordSecret is set.
   ##
   existingPasswordSecretKey: ""
-  ## @param db.name Name of the database to connect to.
+  ## @param db.name Name of the database to connect to. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.primary.name`.
   ##
   name: "pvault"
-  ## @param db.hostname Hostname of the running database.
+  ## @param db.hostname Hostname of the running database. If `postgresql.enabled` is `true` then this value is ignored.
   ##
   hostname: ""
   ## @param db.port Port of the running database.
@@ -341,3 +341,19 @@ extraEnvVars: {}
 ## @param dbCARootCertificate Content of the CA certificate for the database TLS connection, in PEM format.
 ##
 dbCARootCertificate: null
+
+##################
+
+## @section Dependencies parameters
+##
+
+## Development postgres parameters.
+## ref: https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+postgresql:
+  ## @param postgresql.enabled Whether or not to deploy a Postgres instance to the cluster. This is for experimentation purposes only and NOT for production. See ref for more configurations.
+  ##
+  enabled: false
+  ## @param postgresql.image.tag Postgres image tag. Do not change.
+  ##
+  image:
+    tag: "14.5.0"

@@ -179,12 +179,12 @@ It will be supported for the next release.
 
 | Name                               | Description                                                                                                                                                                                                    | Value        |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| `db.user`                          | Username for the database.                                                                                                                                                                                     | `pvault`     |
-| `db.password`                      | Password for the database.                                                                                                                                                                                     | `""`         |
+| `db.user`                          | Username for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.username`.                                                                                | `pvault`     |
+| `db.password`                      | Password for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.password`.                                                                                | `""`         |
 | `db.existingPasswordSecret`        | The name of an existing secret containing the DB password.                                                                                                                                                     | `""`         |
 | `db.existingPasswordSecretKey`     | The key in an existing secret that contains the DB password.                                                                                                                                                   | `""`         |
-| `db.name`                          | Name of the database to connect to.                                                                                                                                                                            | `pvault`     |
-| `db.hostname`                      | Hostname of the running database.                                                                                                                                                                              | `""`         |
+| `db.name`                          | Name of the database to connect to. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.primary.name`.                                                                        | `pvault`     |
+| `db.hostname`                      | Hostname of the running database. If `postgresql.enabled` is `true` then this value is ignored.                                                                                                                | `""`         |
 | `db.port`                          | Port of the running database.                                                                                                                                                                                  | `5432`       |
 | `db.requireTLS`                    | Vault tries to connect to the database with TLS. Default is dependant on `devmode`.                                                                                                                            | `nil`        |
 | `devmode`                          | Whether Vault runs in development mode.                                                                                                                                                                        | `false`      |
@@ -225,6 +225,15 @@ It will be supported for the next release.
 | Name                  | Description                                                                   | Value |
 | --------------------- | ----------------------------------------------------------------------------- | ----- |
 | `dbCARootCertificate` | Content of the CA certificate for the database TLS connection, in PEM format. | `nil` |
+
+
+### Dependencies parameters
+
+| Name                   | Description                                                                                                                                                     | Value    |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `postgresql.enabled`   | Whether or not to deploy a Postgres instance to the cluster. This is for experimentation purposes only and NOT for production. See ref for more configurations. | `false`  |
+| `postgresql.image.tag` | Postgres image tag. Do not change.                                                                                                                              | `14.5.0` |
+
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 

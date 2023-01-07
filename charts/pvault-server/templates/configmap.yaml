@@ -1,4 +1,22 @@
 ---
+{{  $dbHost := "" }}
+{{  $dbName := "" }}
+{{  $dbUser := "" }}
+{{  $dbPass := "" }}
+
+# If dev psql is enabled, override Vault configurations. Otherwise, enforce them.
+{{- if .Values.postgresql.enabled }}
+{{ $dbHost =  "vault-server-postgresql" }}
+{{ $dbName =  default "pvault" .Values.postgresql.primary.name | quote }}
+{{ $dbUser =  default "pvault" .Values.postgresql.auth.username | quote }}
+{{ $dbPass =  default "pvault" .Values.postgresql.auth.password | quote }}
+{{- else }}
+{{ $dbHost =  required "A valid .Values.db.name entry required!" .Values.db.hostname | quote }}
+{{ $dbName =  required "A valid .Values.db.hostname entry required!" .Values.db.name | quote }}
+{{ $dbUser =  required "A valid .Values.db.user entry required!" .Values.db.user | quote }}
+{{ $dbPass =  required "A valid .Values.db.password entry required!" .Values.db.password | quote }}
+{{- end }}
+
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -14,10 +32,10 @@ data:
     devmode = {{ .Values.devmode }}
 
     [db]
-    hostname    = {{ required "A valid .Values.db.name entry required!" .Values.db.hostname | quote }}
-    name        = {{ required "A valid .Values.db.hostname entry required!" .Values.db.name | quote }}
-    user        = {{ required "A valid .Values.db.user entry required!" .Values.db.user | quote }}
-    password    = {{ required "A valid .Values.db.password entry required!" .Values.db.password | quote }}
+    hostname    = {{ $dbHost }}
+    name        = {{ $dbName }}
+    user        = {{ $dbUser }}
+    password    = {{ $dbPass }}
     port        = {{ .Values.db.port }}
     {{- if kindIs "bool" .Values.db.requireTLS }}
     require_tls = {{ .Values.db.requireTLS }}
