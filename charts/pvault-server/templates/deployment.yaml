@@ -46,12 +46,20 @@ spec:
             httpGet:
               path: /api/pvlt/1.0/data/info/health
               port: pvault-port
+            {{ if .Values.postgresql.enabled }}
+            initialDelaySeconds: 15
+            {{ end }}
             periodSeconds: 10
             failureThreshold: 120
           readinessProbe:
             httpGet:
               path: /api/pvlt/1.0/data/info/health
               port: pvault-port
+            {{ if .Values.postgresql.enabled }}
+            initialDelaySeconds: 15
+            {{ end }}
+            periodSeconds: 10
+            failureThreshold: 120
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if or .Values.pvault.log.datadogAPMEnable .Values.dbCARootCertificate }}

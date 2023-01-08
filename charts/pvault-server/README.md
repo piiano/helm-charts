@@ -62,6 +62,8 @@ helm upgrade --install pvault-server piiano/pvault-server --namespace pvault --c
     --set postgresql.enabled=true
 ```
 
+Please allow up to 15 seconds for the system startup to complete.
+
 Continue with [post installation](#post-installation) checks.
 
 ### Controlled installation
