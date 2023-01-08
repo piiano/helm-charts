@@ -57,12 +57,12 @@ Deploy Piiano Vault Server on your local Kubernetes cluster while also installin
 
 ```console
 helm upgrade --install pvault-server piiano/pvault-server --namespace pvault --create-namespace \
-    --set devmode=true \
-    --set-string db.user=pvault \
-    --set-string db.password=pvault \
-    --set-string db.name=pvault \
-    --set-string db.hostname=db-postgresql.postgres.svc.cluster.local \
-    --set-string app.license=${PVAULT_SERVICE_LICENSE} \
+    --set pvault.devmode=true \
+    --set-string pvault.db.user=pvault \
+    --set-string pvault.db.password=pvault \
+    --set-string pvault.db.name=pvault \
+    --set-string pvault.db.hostname=db-postgresql.postgres.svc.cluster.local \
+    --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
     --set postgresql.enabled=true
 
 ```
@@ -78,12 +78,12 @@ Use the following command line to deploy Piiano Vault Server on a typical Kubern
   ```console
     helm upgrade --install \
       --set devmode=true \
-      --set-string db.user=${DB_USER} \
-      --set-string db.password=${DB_PASS} \
-      --set-string db.hostname=${DB_HOST} \
-      --set-string db.name=${DB_NAME} \
-      --set-string app.license=${PVAULT_SERVICE_LICENSE} \
-      --set-string log.customerIdentifier=my-company-name \
+      --set-string pvault.db.user=${DB_USER} \
+      --set-string pvault.db.password=${DB_PASS} \
+      --set-string pvault.db.hostname=${DB_HOST} \
+      --set-string pvault.db.name=${DB_NAME} \
+      --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
+      --set-string pvault.log.customerIdentifier=my-company-name \
       my-release piiano/pvault-server --create-namespace --namespace pvault
   ```
 
@@ -100,14 +100,14 @@ This section describes how to deploy a Piiano Vault Server on AWS EKS.
 4. Run:
     ```console
     helm upgrade --install \
-      --set devmode=true \
-      --set-string db.user=${RDS_USER} \
-      --set-string db.password=${RDS_PASS} \
-      --set-string db.hostname=${RDS_HOST} \
-      --set-string db.name=${RDS_NAME} \
-      --set-string app.license=${PVAULT_SERVICE_LICENSE} \
-      --set-string kms.uri=aws-kms://${KMS_ARN} \
-      --set-string log.customerIdentifier=my-company-name \
+      --set pvault.devmode=true \
+      --set-string pvault.db.user=${RDS_USER} \
+      --set-string pvault.db.password=${RDS_PASS} \
+      --set-string pvault.db.hostname=${RDS_HOST} \
+      --set-string pvault.db.name=${RDS_NAME} \
+      --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
+      --set-string pvault.kms.uri=aws-kms://${KMS_ARN} \
+      --set-string pvault.log.customerIdentifier=my-company-name \``
       --set-string serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=arn:aws:iam::123456789012:role/pvault-server-role \
       --set-string serviceAccount.name=pvault-sa \
       --set-string nodeSelector."node\.kubernetes\.io/instance-type"=${NODE_INSTANCE_TYPE} \
@@ -222,47 +222,47 @@ It will be supported for the next release.
 
 ### Piiano Vault parameters
 
-| Name                               | Description                                                                                                                                                                                                    | Value        |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| `db.user`                          | Username for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.username`.                                                                                | `pvault`     |
-| `db.password`                      | Password for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.password`.                                                                                | `""`         |
-| `db.existingPasswordSecret`        | The name of an existing secret containing the DB password.                                                                                                                                                     | `""`         |
-| `db.existingPasswordSecretKey`     | The key in an existing secret that contains the DB password.                                                                                                                                                   | `""`         |
-| `db.name`                          | Name of the database to connect to. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.primary.name`.                                                                        | `pvault`     |
-| `db.hostname`                      | Hostname of the running database. If `postgresql.enabled` is `true` then this value is ignored.                                                                                                                | `""`         |
-| `db.port`                          | Port of the running database.                                                                                                                                                                                  | `5432`       |
-| `db.requireTLS`                    | Vault tries to connect to the database with TLS. Default is dependant on `devmode`.                                                                                                                            | `nil`        |
-| `devmode`                          | Whether Vault runs in development mode.                                                                                                                                                                        | `false`      |
-| `features.apiKeyHashing`           | Whether API keys for users are hashed when stored on the database.                                                                                                                                             | `true`       |
-| `features.customTypesEnable`       | Whether Vault should read the pvault.types.toml file and apply the custom types, transformations and validators that it includes.                                                                              | `false`      |
-| `features.encryption`              | This variable is ignored in production. In production, properties set as is_encrypted are always stored encrypted. When this variable is set to false (only in PVAULT_DEVMODE), properties stored unencrypted. | `true`       |
-| `features.maskLicense`             | Whether Vault's service license will be masked while retrieving it.                                                                                                                                            | `false`      |
-| `features.policyEnforcement`       | Whether policy management is enforced.                                                                                                                                                                         | `true`       |
-| `app.adminAPIKey`                  | The admin API key for authentication.                                                                                                                                                                          | `pvaultauth` |
-| `app.existingAdminAPIKeySecret`    | The name of an existing secret containing the admin API key.                                                                                                                                                   | `""`         |
-| `app.existingAdminAPIKeySecretKey` | The key in an existing secret that contains the admin API key.                                                                                                                                                 | `""`         |
-| `app.adminMayReadData`             | Whether Admin is allowed to read data. Default is dependant on `devmode`.                                                                                                                                      | `nil`        |
-| `app.cacheRefreshIntervalSeconds`  | The refresh interval in seconds of the control data cache. If this value is zero the cache is disabled.                                                                                                        | `30`         |
-| `app.defaultPageSize`              | The default page size for object queries when the page size is not specified. The page size is the maximum number of objects that may be requested in one call.                                                | `100`        |
-| `app.maxPageSize`                  | The maximum page size that can be specified for a call. The page size is the maximum number of objects that may be requested in one call.                                                                      | `1000`       |
-| `app.timeoutSeconds`               | Timeout in seconds for REST API calls.                                                                                                                                                                         | `30`         |
-| `app.license`                      | A valid Piiano Vault license is required to start your Vault. The license is a string of characters.                                                                                                           | `""`         |
-| `app.existingLicenseSecret`        | The name of an existing secret containing the license.                                                                                                                                                         | `""`         |
-| `app.existingLicenseSecretKey`     | The key in an existing secret that contains the license.                                                                                                                                                       | `""`         |
-| `kms.uri`                          | The KMS key URI used for property encryption.                                                                                                                                                                  | `""`         |
-| `kms.seed`                         | Generate a local KMS using this seed (KMS_URI can be unset).                                                                                                                                                   | `""`         |
-| `log.level`                        | Log level (supports `debug`, `info`, `warn`, and `error`).                                                                                                                                                     | `debug`      |
-| `log.customerEnv`                  | Identifies the environment in all the observability platforms. Recommended values are `PRODUCTION`, `STAGING`, and `DEV`.                                                                                      | `unset`      |
-| `log.customerIdentifier`           | Identifies the customer in all the observability platforms.                                                                                                                                                    | `unset`      |
-| `log.datadogEnable`                | Enable Datadog logs and metrics.                                                                                                                                                                               | `false`      |
-| `log.datadogEnv`                   | Controls env field of logs sent to Datadog.                                                                                                                                                                    | `dev`        |
-| `log.datadogAPMEnable`             | Enable Datadog application performance monitoring (APM).                                                                                                                                                       | `false`      |
-| `sentry.enable`                    | Enable Sentry telemetry logging.                                                                                                                                                                               | `false`      |
-| `tls.enable`                       | Whether Vault listens on HTTPS (TLS). If `false`, Vault listens on HTTP. If PVAULT_TLS_SELFSIGNED is `true`, this setting is ignored and Vault listens on HTTPS. Default is dependant on `devmode`.            | `nil`        |
-| `tls.selfsigned`                   | Whether Vault runs with a self-signed TLS key (valid for 24h).                                                                                                                                                 | `false`      |
-| `tls.certFile`                     | Path to the TLS certificate file. Must be valid to enable listening on HTTPS (TLS).                                                                                                                            | `""`         |
-| `tls.keyFile`                      | Path to the TLS key file. Must be valid to enable listening on HTTPS (TLS).                                                                                                                                    | `""`         |
-| `extraEnvVars`                     | Overriding environment variables.                                                                                                                                                                              | `{}`         |
+| Name                                      | Description                                                                                                                                                                                                    | Value        |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `pvault.db.user`                          | Username for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.username`.                                                                                | `pvault`     |
+| `pvault.db.password`                      | Password for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.password`.                                                                                | `""`         |
+| `pvault.db.existingPasswordSecret`        | The name of an existing secret containing the DB password.                                                                                                                                                     | `""`         |
+| `pvault.db.existingPasswordSecretKey`     | The key in an existing secret that contains the DB password.                                                                                                                                                   | `""`         |
+| `pvault.db.name`                          | Name of the database to connect to. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.primary.name`.                                                                        | `pvault`     |
+| `pvault.db.hostname`                      | Hostname of the running database. If `postgresql.enabled` is `true` then this value is ignored.                                                                                                                | `""`         |
+| `pvault.db.port`                          | Port of the running database.                                                                                                                                                                                  | `5432`       |
+| `pvault.db.requireTLS`                    | Vault tries to connect to the database with TLS. Default is dependant on `devmode`.                                                                                                                            | `nil`        |
+| `pvault.devmode`                          | Whether Vault runs in development mode.                                                                                                                                                                        | `false`      |
+| `pvault.features.apiKeyHashing`           | Whether API keys for users are hashed when stored on the database.                                                                                                                                             | `true`       |
+| `pvault.features.customTypesEnable`       | Whether Vault should read the pvault.types.toml file and apply the custom types, transformations and validators that it includes.                                                                              | `false`      |
+| `pvault.features.encryption`              | This variable is ignored in production. In production, properties set as is_encrypted are always stored encrypted. When this variable is set to false (only in PVAULT_DEVMODE), properties stored unencrypted. | `true`       |
+| `pvault.features.maskLicense`             | Whether Vault's service license will be masked while retrieving it.                                                                                                                                            | `false`      |
+| `pvault.features.policyEnforcement`       | Whether policy management is enforced.                                                                                                                                                                         | `true`       |
+| `pvault.app.adminAPIKey`                  | The admin API key for authentication.                                                                                                                                                                          | `pvaultauth` |
+| `pvault.app.existingAdminAPIKeySecret`    | The name of an existing secret containing the admin API key.                                                                                                                                                   | `""`         |
+| `pvault.app.existingAdminAPIKeySecretKey` | The key in an existing secret that contains the admin API key.                                                                                                                                                 | `""`         |
+| `pvault.app.adminMayReadData`             | Whether Admin is allowed to read data. Default is dependant on `devmode`.                                                                                                                                      | `nil`        |
+| `pvault.app.cacheRefreshIntervalSeconds`  | The refresh interval in seconds of the control data cache. If this value is zero the cache is disabled.                                                                                                        | `30`         |
+| `pvault.app.defaultPageSize`              | The default page size for object queries when the page size is not specified. The page size is the maximum number of objects that may be requested in one call.                                                | `100`        |
+| `pvault.app.maxPageSize`                  | The maximum page size that can be specified for a call. The page size is the maximum number of objects that may be requested in one call.                                                                      | `1000`       |
+| `pvault.app.timeoutSeconds`               | Timeout in seconds for REST API calls.                                                                                                                                                                         | `30`         |
+| `pvault.app.license`                      | A valid Piiano Vault license is required to start your Vault. The license is a string of characters.                                                                                                           | `""`         |
+| `pvault.app.existingLicenseSecret`        | The name of an existing secret containing the license.                                                                                                                                                         | `""`         |
+| `pvault.app.existingLicenseSecretKey`     | The key in an existing secret that contains the license.                                                                                                                                                       | `""`         |
+| `pvault.kms.uri`                          | The KMS key URI used for property encryption.                                                                                                                                                                  | `""`         |
+| `pvault.kms.seed`                         | Generate a local KMS using this seed (KMS_URI can be unset).                                                                                                                                                   | `""`         |
+| `pvault.log.level`                        | Log level (supports `debug`, `info`, `warn`, and `error`).                                                                                                                                                     | `debug`      |
+| `pvault.log.customerEnv`                  | Identifies the environment in all the observability platforms. Recommended values are `PRODUCTION`, `STAGING`, and `DEV`.                                                                                      | `unset`      |
+| `pvault.log.customerIdentifier`           | Identifies the customer in all the observability platforms.                                                                                                                                                    | `unset`      |
+| `pvault.log.datadogEnable`                | Enable Datadog logs and metrics.                                                                                                                                                                               | `false`      |
+| `pvault.log.datadogEnv`                   | Controls env field of logs sent to Datadog.                                                                                                                                                                    | `dev`        |
+| `pvault.log.datadogAPMEnable`             | Enable Datadog application performance monitoring (APM).                                                                                                                                                       | `false`      |
+| `pvault.sentry.enable`                    | Enable Sentry telemetry logging.                                                                                                                                                                               | `false`      |
+| `pvault.tls.enable`                       | Whether Vault listens on HTTPS (TLS). If `false`, Vault listens on HTTP. If PVAULT_TLS_SELFSIGNED is `true`, this setting is ignored and Vault listens on HTTPS. Default is dependant on `devmode`.            | `nil`        |
+| `pvault.tls.selfsigned`                   | Whether Vault runs with a self-signed TLS key (valid for 24h).                                                                                                                                                 | `false`      |
+| `pvault.tls.certFile`                     | Path to the TLS certificate file. Must be valid to enable listening on HTTPS (TLS).                                                                                                                            | `""`         |
+| `pvault.tls.keyFile`                      | Path to the TLS key file. Must be valid to enable listening on HTTPS (TLS).                                                                                                                                    | `""`         |
+| `pvault.extraEnvVars`                     | Overriding environment variables.                                                                                                                                                                              | `{}`         |
 
 
 ### Environment parameters
