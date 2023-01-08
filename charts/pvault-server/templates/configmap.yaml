@@ -6,8 +6,8 @@
 
 # If dev psql is enabled, override Vault configurations. Otherwise, enforce them.
 {{- if .Values.postgresql.enabled }}
-{{ $dbHost =  "vault-server-postgresql" }}
-{{ $dbName =  default "pvault" .Values.postgresql.primary.name | quote }}
+{{ $dbHost =  printf "%s-postgresql" .Chart.Name | quote }}
+{{ $dbName =  default "pvault" .Values.postgresql.auth.database | quote }}
 {{ $dbUser =  default "pvault" .Values.postgresql.auth.username | quote }}
 {{ $dbPass =  default "pvault" .Values.postgresql.auth.password | quote }}
 {{- else }}

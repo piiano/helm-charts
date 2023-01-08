@@ -194,7 +194,7 @@ pvault:
     ## Note: Only used when existingPasswordSecret is set.
     ##
     existingPasswordSecretKey: ""
-    ## @param pvault.db.name Name of the database to connect to. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.primary.name`.
+    ## @param pvault.db.name Name of the database to connect to. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.database`.
     ##
     name: "pvault"
     ## @param pvault.db.hostname Hostname of the running database. If `postgresql.enabled` is `true` then this value is ignored.
@@ -357,6 +357,16 @@ postgresql:
   ##
   image:
     tag: "14.5.0"
+  auth:
+    ## @param postgresql.auth.database Name of the database. It is unlikely that you will need to change this parameter.
+    ##
+    database: "pvault"
+    ## @param postgresql.auth.username Postgres username. It is unlikely that you will need to change this parameter.
+    ##
+    username: "pvault"
+    ## @param postgresql.auth.password Postgres password. It is unlikely that you will need to change this parameter.
+    ##
+    password: "pvault"
   ## @param postgresql.primary.persistence.enabled Use ephemeral storage for Postgres. When `false`, a PVC is not created.
   ##
   primary:
