@@ -6,15 +6,15 @@
 
 # If dev psql is enabled, override Vault configurations. Otherwise, enforce them.
 {{- if .Values.postgresql.enabled }}
-{{ $dbHost =  "vault-server-postgresql" }}
-{{ $dbName =  default "pvault" .Values.postgresql.primary.name | quote }}
+{{ $dbHost =  printf "%s-postgresql" .Chart.Name | quote }}
+{{ $dbName =  default "pvault" .Values.postgresql.auth.database | quote }}
 {{ $dbUser =  default "pvault" .Values.postgresql.auth.username | quote }}
 {{ $dbPass =  default "pvault" .Values.postgresql.auth.password | quote }}
 {{- else }}
-{{ $dbHost =  required "A valid .Values.db.name entry required!" .Values.db.hostname | quote }}
-{{ $dbName =  required "A valid .Values.db.hostname entry required!" .Values.db.name | quote }}
-{{ $dbUser =  required "A valid .Values.db.user entry required!" .Values.db.user | quote }}
-{{ $dbPass =  required "A valid .Values.db.password entry required!" .Values.db.password | quote }}
+{{ $dbHost =  required "A valid .Values.pvault.db.name entry required!" .Values.pvault.db.hostname | quote }}
+{{ $dbName =  required "A valid .Values.pvault.db.hostname entry required!" .Values.pvault.db.name | quote }}
+{{ $dbUser =  required "A valid .Values.pvault.db.user entry required!" .Values.pvault.db.user | quote }}
+{{ $dbPass =  required "A valid .Values.pvault.db.password entry required!" .Values.pvault.db.password | quote }}
 {{- end }}
 
 kind: ConfigMap
@@ -29,60 +29,60 @@ data:
     # Piiano Vault configuration file
     # -----------------------------
 
-    devmode = {{ .Values.devmode }}
+    devmode = {{ .Values.pvault.devmode }}
 
     [db]
     hostname    = {{ $dbHost }}
     name        = {{ $dbName }}
     user        = {{ $dbUser }}
     password    = {{ $dbPass }}
-    port        = {{ .Values.db.port }}
-    {{- if kindIs "bool" .Values.db.requireTLS }}
-    require_tls = {{ .Values.db.requireTLS }}
+    port        = {{ .Values.pvault.db.port }}
+    {{- if kindIs "bool" .Values.pvault.db.requireTLS }}
+    require_tls = {{ .Values.pvault.db.requireTLS }}
     {{ end }}
 
     [service]
     listen_addr         = "0.0.0.0:8123"
-    admin_api_key       = {{ .Values.app.adminAPIKey | quote }}
-    {{- if kindIs "bool" .Values.app.adminMayReadData }}
-    admin_may_read_data = {{ .Values.app.adminMayReadData }}
+    admin_api_key       = {{ .Values.pvault.app.adminAPIKey | quote }}
+    {{- if kindIs "bool" .Values.pvault.app.adminMayReadData }}
+    admin_may_read_data = {{ .Values.pvault.app.adminMayReadData }}
     {{ end }}
-    timeout_seconds     = {{ .Values.app.timeoutSeconds }}
-    cache_refresh_interval_seconds = {{ .Values.app.cacheRefreshIntervalSeconds }}
-    default_page_size   = {{ .Values.app.defaultPageSize }}
-    max_page_size       = {{ .Values.app.maxPageSize }}
-    license             = {{ required "A valid .Values.app.license entry required!" .Values.app.license | quote }}
+    timeout_seconds     = {{ .Values.pvault.app.timeoutSeconds }}
+    cache_refresh_interval_seconds = {{ .Values.pvault.app.cacheRefreshIntervalSeconds }}
+    default_page_size   = {{ .Values.pvault.app.defaultPageSize }}
+    max_page_size       = {{ .Values.pvault.app.maxPageSize }}
+    license             = {{ required "A valid .Values.pvault.app.license entry required!" .Values.pvault.app.license | quote }}
 
 
     [tls]
-    {{- if kindIs "bool" .Values.tls.enable }}
-    enable = {{ .Values.tls.enable }}
+    {{- if kindIs "bool" .Values.pvault.tls.enable }}
+    enable = {{ .Values.pvault.tls.enable }}
     {{ end }}
-    cert_file   = {{ .Values.tls.certFile | quote }}
-    key_file    = {{ .Values.tls.keyFile | quote }}
-    selfsigned  = {{ .Values.tls.selfsigned }}
+    cert_file   = {{ .Values.pvault.tls.certFile | quote }}
+    key_file    = {{ .Values.pvault.tls.keyFile | quote }}
+    selfsigned  = {{ .Values.pvault.tls.selfsigned }}
 
     [features]
-    encryption          = {{ .Values.features.encryption }}
-    api_key_hashing     = {{ .Values.features.apiKeyHashing }}
-    policy_enforcement  = {{ .Values.features.policyEnforcement }}
-    mask_license        = {{ .Values.features.maskLicense }}
-    custom_types_enable = {{ .Values.features.customTypesEnable }}
+    encryption          = {{ .Values.pvault.features.encryption }}
+    api_key_hashing     = {{ .Values.pvault.features.apiKeyHashing }}
+    policy_enforcement  = {{ .Values.pvault.features.policyEnforcement }}
+    mask_license        = {{ .Values.pvault.features.maskLicense }}
+    custom_types_enable = {{ .Values.pvault.features.customTypesEnable }}
 
     [kms]
-    uri   = {{ .Values.kms.uri | quote }}
-    seed  = {{ .Values.kms.seed | quote }}
+    uri   = {{ .Values.pvault.kms.uri | quote }}
+    seed  = {{ .Values.pvault.kms.seed | quote }}
 
     [log]
-    level               = {{ .Values.log.level | quote }}
-    datadog_enable      = {{ .Values.log.datadogEnable }}
-    datadog_env         = {{ .Values.log.datadogEnv | quote }}
-    datadog_apm_enable  = {{ .Values.log.datadogAPMEnable }}
-    customer_env        = {{ .Values.log.customerEnv | quote }}
-    customer_identifier = {{ .Values.log.customerIdentifier | quote }}
+    level               = {{ .Values.pvault.log.level | quote }}
+    datadog_enable      = {{ .Values.pvault.log.datadogEnable }}
+    datadog_env         = {{ .Values.pvault.log.datadogEnv | quote }}
+    datadog_apm_enable  = {{ .Values.pvault.log.datadogAPMEnable }}
+    customer_env        = {{ .Values.pvault.log.customerEnv | quote }}
+    customer_identifier = {{ .Values.pvault.log.customerIdentifier | quote }}
 
     [sentry]
-    enable = {{ .Values.sentry.enable }}
+    enable = {{ .Values.pvault.sentry.enable }}
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -90,7 +90,7 @@ metadata:
   name: {{ include "pvault-server.fullname" . }}-env-vars
   labels:
     {{- include "pvault-server.labels" . | nindent 4 }}
-{{- with .Values.extraEnvVars }}
+{{- with .Values.pvault.extraEnvVars }}
 data:
   {{- toYaml . | nindent 2 }}
 {{- end }}

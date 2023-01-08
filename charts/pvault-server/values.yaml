@@ -175,163 +175,163 @@ affinity: {}
 
 ## @section Piiano Vault parameters
 ##
+pvault:
+  ## Piiano Vault DB parameters.
+  ## ref: https://piiano.com/docs/guides/configure/environment-variables#database
+  db:
+    ## @param pvault.db.user Username for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.username`.
+    ##
+    user: "pvault"
+    ## @param pvault.db.password Password for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.password`.
+    ##
+    password: ""
+    ## @param pvault.db.existingPasswordSecret The name of an existing secret containing the DB password.
+    ## Note: Must contain a key as specified by existingPasswordSecretKey.
+    ## Note: If set, the `password` parameter is ignored.
+    ##
+    existingPasswordSecret: ""
+    ## @param pvault.db.existingPasswordSecretKey The key in an existing secret that contains the DB password.
+    ## Note: Only used when existingPasswordSecret is set.
+    ##
+    existingPasswordSecretKey: ""
+    ## @param pvault.db.name Name of the database to connect to. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.database`.
+    ##
+    name: "pvault"
+    ## @param pvault.db.hostname Hostname of the running database. If `postgresql.enabled` is `true` then this value is ignored.
+    ##
+    hostname: ""
+    ## @param pvault.db.port Port of the running database.
+    ##
+    port: 5432
+    ## @param pvault.db.requireTLS Vault tries to connect to the database with TLS. Default is dependant on `devmode`.
+    ##
+    requireTLS: null
 
-## Piiano Vault DB parameters.
-## ref: https://piiano.com/docs/guides/configure/environment-variables#database
-db:
-  ## @param db.user Username for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.username`.
+  ## Piiano Vault Mode.
+  ## ref: https://piiano.com/docs/guides/configure/environment-variables#production-and-development-mode
   ##
-  user: "pvault"
-  ## @param db.password Password for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.password`.
-  ##
-  password: ""
-  ## @param db.existingPasswordSecret The name of an existing secret containing the DB password.
-  ## Note: Must contain a key as specified by existingPasswordSecretKey.
-  ## Note: If set, the `password` parameter is ignored.
-  ##
-  existingPasswordSecret: ""
-  ## @param db.existingPasswordSecretKey The key in an existing secret that contains the DB password.
-  ## Note: Only used when existingPasswordSecret is set.
-  ##
-  existingPasswordSecretKey: ""
-  ## @param db.name Name of the database to connect to. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.primary.name`.
-  ##
-  name: "pvault"
-  ## @param db.hostname Hostname of the running database. If `postgresql.enabled` is `true` then this value is ignored.
-  ##
-  hostname: ""
-  ## @param db.port Port of the running database.
-  ##
-  port: 5432
-  ## @param db.requireTLS Vault tries to connect to the database with TLS. Default is dependant on `devmode`.
-  ##
-  requireTLS: null
 
-## Piiano Vault Mode.
-## ref: https://piiano.com/docs/guides/configure/environment-variables#production-and-development-mode
-##
+  ## @param pvault.devmode Whether Vault runs in development mode.
+  ##
+  devmode: false
 
-## @param devmode Whether Vault runs in development mode.
-##
-devmode: false
+  ## Piiano Vault service and features.
+  ## ref: https://piiano.com/docs/guides/configure/environment-variables#service-and-features
+  ##
+  features:
+    ## @param pvault.features.apiKeyHashing Whether API keys for users are hashed when stored on the database.
+    ##
+    apiKeyHashing: true
+    ## @param pvault.features.customTypesEnable Whether Vault should read the pvault.types.toml file and apply the custom types, transformations and validators that it includes.
+    ##
+    customTypesEnable: false
+    ## @param pvault.features.encryption This variable is ignored in production. In production, properties set as is_encrypted are always stored encrypted. When this variable is set to false (only in PVAULT_DEVMODE), properties stored unencrypted.
+    ##
+    encryption: true
+    ## @param pvault.features.maskLicense Whether Vault's service license will be masked while retrieving it.
+    ##
+    maskLicense: false
+    ## @param pvault.features.policyEnforcement Whether policy management is enforced.
+    ##
+    policyEnforcement: true
+  app:
+    ## @param pvault.app.adminAPIKey The admin API key for authentication.
+    ##
+    adminAPIKey: pvaultauth
+    ## @param pvault.app.existingAdminAPIKeySecret The name of an existing secret containing the admin API key.
+    ## Note: Must contain a key as specified by existingAdminAPIKeySecretKey.
+    ## Note: If set, the `adminAPIKey` parameter is ignored.
+    ##
+    existingAdminAPIKeySecret: ""
+    ## @param pvault.app.existingAdminAPIKeySecretKey The key in an existing secret that contains the admin API key.
+    ## Note: Only used when existingAdminAPIKeySecret is set.
+    ##
+    existingAdminAPIKeySecretKey: ""
+    ## @param pvault.app.adminMayReadData Whether Admin is allowed to read data. Default is dependant on `devmode`.
+    ##
+    adminMayReadData: null
+    ## @param pvault.app.cacheRefreshIntervalSeconds The refresh interval in seconds of the control data cache. If this value is zero the cache is disabled.
+    ##
+    cacheRefreshIntervalSeconds: 30
+    ## @param pvault.app.defaultPageSize The default page size for object queries when the page size is not specified. The page size is the maximum number of objects that may be requested in one call.
+    ##
+    defaultPageSize: 100
+    ## @param pvault.app.maxPageSize The maximum page size that can be specified for a call. The page size is the maximum number of objects that may be requested in one call.
+    ##
+    maxPageSize: 1000
+    ## @param pvault.app.timeoutSeconds Timeout in seconds for REST API calls.
+    ##
+    timeoutSeconds: 30
+    ## @param pvault.app.license A valid Piiano Vault license is required to start your Vault. The license is a string of characters.
+    ## ref: https://piiano.com/docs/guides/configure/environment-variables#piiano-vault-license
+    ##
+    license: ""
+    ## @param pvault.app.existingLicenseSecret The name of an existing secret containing the license.
+    ## Note: Must contain a key as specified by existingLicenseSecretKey.
+    ## Note: If set, the `license` parameter is ignored.
+    ##
+    existingLicenseSecret: ""
+    ## @param pvault.app.existingLicenseSecretKey The key in an existing secret that contains the license.
+    ## Note: Only used when existingLicenseSecret is set.
+    ##
+    existingLicenseSecretKey: ""
 
-## Piiano Vault service and features.
-## ref: https://piiano.com/docs/guides/configure/environment-variables#service-and-features
-##
-features:
-  ## @param features.apiKeyHashing Whether API keys for users are hashed when stored on the database.
+  ## Piiano Vault KMS.
+  ## ref: https://piiano.com/docs/guides/configure/environment-variables#key-management-service
   ##
-  apiKeyHashing: true
-  ## @param features.customTypesEnable Whether Vault should read the pvault.types.toml file and apply the custom types, transformations and validators that it includes.
+  kms:
+    ## @param pvault.kms.uri The KMS key URI used for property encryption.
+    ##
+    uri: ""
+    ## @param pvault.kms.seed Generate a local KMS using this seed (KMS_URI can be unset).
+    ##
+    seed: ""
+  ## Piiano Vault Logs and Telemetry.
+  ## ref: https://piiano.com/docs/guides/configure/environment-variables#logs-and-telemetry
   ##
-  customTypesEnable: false
-  ## @param features.encryption This variable is ignored in production. In production, properties set as is_encrypted are always stored encrypted. When this variable is set to false (only in PVAULT_DEVMODE), properties stored unencrypted.
+  log:
+    ## @param pvault.log.level Log level (supports `debug`, `info`, `warn`, and `error`).
+    ##
+    level: debug
+    ## @param pvault.log.customerEnv Identifies the environment in all the observability platforms. Recommended values are `PRODUCTION`, `STAGING`, and `DEV`.
+    ##
+    customerEnv: unset
+    ## @param pvault.log.customerIdentifier Identifies the customer in all the observability platforms.
+    ##
+    customerIdentifier: unset
+    ## @param pvault.log.datadogEnable Enable Datadog logs and metrics.
+    ##
+    datadogEnable: false
+    ## @param pvault.log.datadogEnv Controls env field of logs sent to Datadog.
+    ##
+    datadogEnv: dev
+    ## @param pvault.log.datadogAPMEnable Enable Datadog application performance monitoring (APM).
+    ##
+    datadogAPMEnable: false
+  sentry:
+    ## @param pvault.sentry.enable Enable Sentry telemetry logging.
+    ##
+    enable: false
+  ## Piiano Vault TLS.
+  ## ref: https://piiano.com/docs/guides/configure/environment-variables#tls
   ##
-  encryption: true
-  ## @param features.maskLicense Whether Vault's service license will be masked while retrieving it.
-  ##
-  maskLicense: false
-  ## @param features.policyEnforcement Whether policy management is enforced.
-  ##
-  policyEnforcement: true
-app:
-  ## @param app.adminAPIKey The admin API key for authentication.
-  ##
-  adminAPIKey: pvaultauth
-  ## @param app.existingAdminAPIKeySecret The name of an existing secret containing the admin API key.
-  ## Note: Must contain a key as specified by existingAdminAPIKeySecretKey.
-  ## Note: If set, the `adminAPIKey` parameter is ignored.
-  ##
-  existingAdminAPIKeySecret: ""
-  ## @param app.existingAdminAPIKeySecretKey The key in an existing secret that contains the admin API key.
-  ## Note: Only used when existingAdminAPIKeySecret is set.
-  ##
-  existingAdminAPIKeySecretKey: ""
-  ## @param app.adminMayReadData Whether Admin is allowed to read data. Default is dependant on `devmode`.
-  ##
-  adminMayReadData: null
-  ## @param app.cacheRefreshIntervalSeconds The refresh interval in seconds of the control data cache. If this value is zero the cache is disabled.
-  ##
-  cacheRefreshIntervalSeconds: 30
-  ## @param app.defaultPageSize The default page size for object queries when the page size is not specified. The page size is the maximum number of objects that may be requested in one call.
-  ##
-  defaultPageSize: 100
-  ## @param app.maxPageSize The maximum page size that can be specified for a call. The page size is the maximum number of objects that may be requested in one call.
-  ##
-  maxPageSize: 1000
-  ## @param app.timeoutSeconds Timeout in seconds for REST API calls.
-  ##
-  timeoutSeconds: 30
-  ## @param app.license A valid Piiano Vault license is required to start your Vault. The license is a string of characters.
-  ## ref: https://piiano.com/docs/guides/configure/environment-variables#piiano-vault-license
-  ##
-  license: ""
-  ## @param app.existingLicenseSecret The name of an existing secret containing the license.
-  ## Note: Must contain a key as specified by existingLicenseSecretKey.
-  ## Note: If set, the `license` parameter is ignored.
-  ##
-  existingLicenseSecret: ""
-  ## @param app.existingLicenseSecretKey The key in an existing secret that contains the license.
-  ## Note: Only used when existingLicenseSecret is set.
-  ##
-  existingLicenseSecretKey: ""
+  tls:
+    ## @param pvault.tls.enable Whether Vault listens on HTTPS (TLS). If `false`, Vault listens on HTTP. If PVAULT_TLS_SELFSIGNED is `true`, this setting is ignored and Vault listens on HTTPS. Default is dependant on `devmode`.
+    ##
+    enable: null
+    ## @param pvault.tls.selfsigned Whether Vault runs with a self-signed TLS key (valid for 24h).
+    ##
+    selfsigned: false
+    ## @param pvault.tls.certFile Path to the TLS certificate file. Must be valid to enable listening on HTTPS (TLS).
+    ##
+    certFile: ""
+    ## @param pvault.tls.keyFile Path to the TLS key file. Must be valid to enable listening on HTTPS (TLS).
+    ##
+    keyFile: ""
 
-## Piiano Vault KMS.
-## ref: https://piiano.com/docs/guides/configure/environment-variables#key-management-service
-##
-kms:
-  ## @param kms.uri The KMS key URI used for property encryption.
+  ## @param pvault.extraEnvVars Overriding environment variables.
   ##
-  uri: ""
-  ## @param kms.seed Generate a local KMS using this seed (KMS_URI can be unset).
-  ##
-  seed: ""
-## Piiano Vault Logs and Telemetry.
-## ref: https://piiano.com/docs/guides/configure/environment-variables#logs-and-telemetry
-##
-log:
-  ## @param log.level Log level (supports `debug`, `info`, `warn`, and `error`).
-  ##
-  level: debug
-  ## @param log.customerEnv Identifies the environment in all the observability platforms. Recommended values are `PRODUCTION`, `STAGING`, and `DEV`.
-  ##
-  customerEnv: unset
-  ## @param log.customerIdentifier Identifies the customer in all the observability platforms.
-  ##
-  customerIdentifier: unset
-  ## @param log.datadogEnable Enable Datadog logs and metrics.
-  ##
-  datadogEnable: false
-  ## @param log.datadogEnv Controls env field of logs sent to Datadog.
-  ##
-  datadogEnv: dev
-  ## @param log.datadogAPMEnable Enable Datadog application performance monitoring (APM).
-  ##
-  datadogAPMEnable: false
-sentry:
-  ## @param sentry.enable Enable Sentry telemetry logging.
-  ##
-  enable: false
-## Piiano Vault TLS.
-## ref: https://piiano.com/docs/guides/configure/environment-variables#tls
-##
-tls:
-  ## @param tls.enable Whether Vault listens on HTTPS (TLS). If `false`, Vault listens on HTTP. If PVAULT_TLS_SELFSIGNED is `true`, this setting is ignored and Vault listens on HTTPS. Default is dependant on `devmode`.
-  ##
-  enable: null
-  ## @param tls.selfsigned Whether Vault runs with a self-signed TLS key (valid for 24h).
-  ##
-  selfsigned: false
-  ## @param tls.certFile Path to the TLS certificate file. Must be valid to enable listening on HTTPS (TLS).
-  ##
-  certFile: ""
-  ## @param tls.keyFile Path to the TLS key file. Must be valid to enable listening on HTTPS (TLS).
-  ##
-  keyFile: ""
-
-## @param extraEnvVars Overriding environment variables.
-##
-extraEnvVars: {}
+  extraEnvVars: {}
 
 ##################
 
@@ -357,3 +357,18 @@ postgresql:
   ##
   image:
     tag: "14.5.0"
+  auth:
+    ## @param postgresql.auth.database Name of the database. It is unlikely that you will need to change this parameter.
+    ##
+    database: "pvault"
+    ## @param postgresql.auth.username Postgres username. It is unlikely that you will need to change this parameter.
+    ##
+    username: "pvault"
+    ## @param postgresql.auth.password Postgres password. It is unlikely that you will need to change this parameter.
+    ##
+    password: "pvault"
+  ## @param postgresql.primary.persistence.enabled Use ephemeral storage for Postgres. When `false`, a PVC is not created.
+  ##
+  primary:
+    persistence:
+      enabled: false

@@ -54,9 +54,9 @@ spec:
               port: pvault-port
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.log.datadogAPMEnable .Values.dbCARootCertificate }}
+          {{- if or .Values.pvault.log.datadogAPMEnable .Values.dbCARootCertificate }}
           env:
-          {{- if .Values.log.datadogAPMEnable }}
+          {{- if .Values.pvault.log.datadogAPMEnable }}
             - name: DD_AGENT_HOST
               valueFrom:
                 fieldRef:
@@ -88,9 +88,9 @@ spec:
       - name: pvault-system-toml-volume
         configMap:
           name:  {{ include "pvault-server.fullname" . }}-variables
-      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-db-password-volume" "existingSecret" .Values.db.existingPasswordSecret "existingSecretKey" .Values.db.existingPasswordSecretKey "defaultSecretKey" "pvault-db-password" "context" .) | indent 6 }}
-      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-admin-api-key-volume" "existingSecret" .Values.app.existingAdminAPIKeySecret "existingSecretKey" .Values.app.existingAdminAPIKeySecretKey "defaultSecretKey" "admin-api-key" "context" .) | indent 6 }}
-      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-license-volume" "existingSecret" .Values.app.existingLicenseSecret "existingSecretKey" .Values.app.existingLicenseSecretKey "defaultSecretKey" "license" "context" .) | indent 6 }}
+      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-db-password-volume" "existingSecret" .Values.pvault.db.existingPasswordSecret "existingSecretKey" .Values.pvault.db.existingPasswordSecretKey "defaultSecretKey" "pvault-db-password" "context" .) | indent 6 }}
+      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-admin-api-key-volume" "existingSecret" .Values.pvault.app.existingAdminAPIKeySecret "existingSecretKey" .Values.pvault.app.existingAdminAPIKeySecretKey "defaultSecretKey" "admin-api-key" "context" .) | indent 6 }}
+      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-license-volume" "existingSecret" .Values.pvault.app.existingLicenseSecret "existingSecretKey" .Values.pvault.app.existingLicenseSecretKey "defaultSecretKey" "license" "context" .) | indent 6 }}
       {{- if .Values.dbCARootCertificate}}
       - name: db-ca-cert-volume
         configMap:
