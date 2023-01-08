@@ -357,3 +357,8 @@ postgresql:
   ##
   image:
     tag: "14.5.0"
+  ## @param postgresql.primary.persistence.enabled Use ephemeral storage for Postgres. When `false`, a PVC is not created.
+  ##
+  primary:
+    persistence:
+      enabled: false

@@ -64,7 +64,6 @@ helm upgrade --install pvault-server piiano/pvault-server --namespace pvault --c
     --set-string pvault.db.hostname=db-postgresql.postgres.svc.cluster.local \
     --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
     --set postgresql.enabled=true
-
 ```
 
 Continue with [post installation](#post-installation) checks.
@@ -274,11 +273,11 @@ It will be supported for the next release.
 
 ### Dependencies parameters
 
-| Name                   | Description                                                                                                                                                     | Value    |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `postgresql.enabled`   | Whether or not to deploy a Postgres instance to the cluster. This is for experimentation purposes only and NOT for production. See ref for more configurations. | `false`  |
-| `postgresql.image.tag` | Postgres image tag. Do not change.                                                                                                                              | `14.5.0` |
-
+| Name                                     | Description                                                                                                                                                     | Value    |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `postgresql.enabled`                     | Whether or not to deploy a Postgres instance to the cluster. This is for experimentation purposes only and NOT for production. See ref for more configurations. | `false`  |
+| `postgresql.image.tag`                   | Postgres image tag. Do not change.                                                                                                                              | `14.5.0` |
+| `postgresql.primary.persistence.enabled` | Use ephemeral storage for Postgres. When `false`, a PVC is not created.                                                                                         | `false`  |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
