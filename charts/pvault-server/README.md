@@ -58,10 +58,6 @@ Deploy Piiano Vault Server on your local Kubernetes cluster while also installin
 ```console
 helm upgrade --install pvault-server piiano/pvault-server --namespace pvault --create-namespace \
     --set pvault.devmode=true \
-    --set-string pvault.db.user=pvault \
-    --set-string pvault.db.password=pvault \
-    --set-string pvault.db.name=pvault \
-    --set-string pvault.db.hostname=db-postgresql.postgres.svc.cluster.local \
     --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
     --set postgresql.enabled=true
 ```
@@ -106,7 +102,7 @@ This section describes how to deploy a Piiano Vault Server on AWS EKS.
       --set-string pvault.db.name=${RDS_NAME} \
       --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
       --set-string pvault.kms.uri=aws-kms://${KMS_ARN} \
-      --set-string pvault.log.customerIdentifier=my-company-name \``
+      --set-string pvault.log.customerIdentifier=my-company-name \
       --set-string serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=arn:aws:iam::123456789012:role/pvault-server-role \
       --set-string serviceAccount.name=pvault-sa \
       --set-string nodeSelector."node\.kubernetes\.io/instance-type"=${NODE_INSTANCE_TYPE} \
