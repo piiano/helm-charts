@@ -14,6 +14,7 @@ To see all the available configurations, please refer to [Piiano Vault documenta
 (*) This prerequisite could be automatically satisfied by the installer. See installation flags.
 
 These are the earliest versions that have been tested. Earlier versions may also work.
+
 ## Installing the Chart
 
 Add the repository:
@@ -23,25 +24,24 @@ helm repo add piiano https://piiano.github.io/helm-charts
 
 Select your use case:
 
-1. [**Simplest local installation**](#simplest-local-installation) - try out the Vault on a local K8S cluster with a naive default configuration. This will also install the dependent postgres server. This mode is only meant for testing purposes.
-2. [**Controlled installation**](#controlled-installation) - try out the Vault on a K8S cluster and connect it to your database or optionally install a postgres first.
-3. [**AWS installation**](#aws-installation) - Try out the Vault on AWS EKS, connecting to your RDS postgres database or optionally install a postgres first. 
+1. [**Simplest local installation**](#simplest-local-installation) - Try out the Vault on a local Kubernetes cluster with a naive default configuration. This will also install the dependent Postgres server. This mode is only meant for testing purposes.
+2. [**Controlled installation**](#controlled-installation) - Try out the Vault on a Kubernetes cluster and connect it to your database or optionally install a Postgres first.
+3. [**AWS installation**](#aws-installation) - Try out the Vault on AWS EKS, connecting to your RDS Postgres database or optionally install a Postgres first. 
 4. [**Fully automated installation**](#fully-automated-installation) - Use this option when you have fully configured the values.yaml to fit your needs.
 
 
-### Installing postgres
+### Installing Postgres
 
 Before installing Piiano Vault Server, you will need a running instance of Postgres 14.
 It is recommended to use a managed cloud provider Postgres installation such as RDS in AWS or CloudSQL in GCP. The simplest local installation mode will install Postgres for you (skip this step). 
 
 :warning: This installation is provided for testing purposes and is not meant for production. It is not backed up, not encrypted at REST, etc.
-The postgres is installed with ephemeral storage. We assume that most local experiments will be done with Docker Desktop and it has a limitation with PVC configuration. It implies that restarting the postgres will wipe its database and will require restarting the Vault as well.
 
- You can use the following Helm command to deploy Postgres to your cluster:
+You can use the following Helm command to deploy Postgres to your cluster:
 
 ```console
-helm repo add my-repo https://charts.bitnami.com/bitnami
-helm upgrade --install db my-repo/postgresql --namespace postgres --create-namespace \
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm upgrade --install db bitnami/postgresql --namespace postgres --create-namespace \
     --set-string image.tag=14.5.0 \
     --set-string auth.username=pvault \
     --set-string auth.password=pvault \
@@ -49,18 +49,22 @@ helm upgrade --install db my-repo/postgresql --namespace postgres --create-names
     --set primary.persistence.enabled=false 
 ```
 
+Note that the command line deploys the Postgres instance with ephemeral storage. It implies that restarting the Postgres will wipe the database and will require restarting the Vault as well.
+
 ### Simplest local installation
 
-Deploy Piiano Vault Server on your local Kubernetes cluster while also installing postgres as part of this process:
+Deploy Piiano Vault Server on your local Kubernetes cluster while also installing Postgres as part of this process:
 
 ```console
 helm upgrade --install pvault-server piiano/pvault-server --namespace pvault --create-namespace \
+    --set devmode=true \
     --set-string db.user=pvault \
     --set-string db.password=pvault \
     --set-string db.name=pvault \
     --set-string db.hostname=db-postgresql.postgres.svc.cluster.local \
     --set-string app.license=${PVAULT_SERVICE_LICENSE} \
-    --set devmode=true
+    --set postgresql.enabled=true
+
 ```
 
 Continue with [post installation](#post-installation) checks.
@@ -92,7 +96,7 @@ This section describes how to deploy a Piiano Vault Server on AWS EKS.
 
 1. Set the parameters: `RDS_USER`, `RDS_PASS`, `RDS_HOST` and `RDS_NAME`.
 2. Set the parameter: `NODE_INSTANCE_TYPE` such as `m6g.large`. For testing purposes you can use an instance as small as a single core and 1GB of RAM.
-3. Configure a role to use in the following command. IAM role should have `kms:Decrypt` and `kms:Encrypt` permissions to the KMS key in the configuration. In addition, the IAM role should be configured to be assumed by the Service Account. You can set the Service Account name by using the parameter `serviceAccount.name`.
+3. Configure an IAM role to use in the following command. IAM role should have `kms:Decrypt` and `kms:Encrypt` permissions to the KMS key in the configuration. In addition, the IAM role should be configured to be assumed by the Service Account (see [AWS docs](https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html)). You can set the Service Account name by using the parameter `serviceAccount.name`.
 4. Run:
     ```console
     helm upgrade --install \
@@ -105,6 +109,7 @@ This section describes how to deploy a Piiano Vault Server on AWS EKS.
       --set-string kms.uri=aws-kms://${KMS_ARN} \
       --set-string log.customerIdentifier=my-company-name \
       --set-string serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=arn:aws:iam::123456789012:role/pvault-server-role \
+      --set-string serviceAccount.name=pvault-sa \
       --set-string nodeSelector."node\.kubernetes\.io/instance-type"=${NODE_INSTANCE_TYPE} \
       my-release piiano/pvault-server --create-namespace --namespace pvault
     ```
@@ -279,7 +284,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 ```console
 $ helm install my-release \
-  --set db.requireTLS=true my-repo/pvault-server
+  --set db.requireTLS=true piiano/pvault-server
 ```
 
 The above command sets the Piiano Vault Server to require TLS connection to the database.
@@ -289,7 +294,7 @@ The above command sets the Piiano Vault Server to require TLS connection to the 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```console
-$ helm install my-release -f values.yaml my-repo/pvault-server
+$ helm install my-release -f values.yaml piiano/pvault-server
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
