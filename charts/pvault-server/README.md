@@ -49,6 +49,8 @@ helm upgrade --install db bitnami/postgresql --namespace postgres --create-names
     --set primary.persistence.enabled=false 
 ```
 
+Postgres will be available from within the cluster with the following hostname: `db-postgresql.postgres.svc.cluster.local`.
+
 Note that the command line deploys the Postgres instance with ephemeral storage. It implies that restarting the Postgres will wipe the database and will require restarting the Vault as well.
 
 ### Simplest local installation
@@ -74,14 +76,14 @@ Use the following command line to deploy Piiano Vault Server on a typical Kubern
 2. Run:
   ```console
     helm upgrade --install \
-      --set devmode=true \
+      --set pvault.devmode=true \
       --set-string pvault.db.user=${DB_USER} \
       --set-string pvault.db.password=${DB_PASS} \
       --set-string pvault.db.hostname=${DB_HOST} \
       --set-string pvault.db.name=${DB_NAME} \
       --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
       --set-string pvault.log.customerIdentifier=my-company-name \
-      my-release piiano/pvault-server --create-namespace --namespace pvault
+      pvault-server piiano/pvault-server --create-namespace --namespace pvault
   ```
 
 Continue with [post installation](#post-installation) checks.
@@ -108,7 +110,7 @@ This section describes how to deploy a Piiano Vault Server on AWS EKS.
       --set-string serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=arn:aws:iam::123456789012:role/pvault-server-role \
       --set-string serviceAccount.name=pvault-sa \
       --set-string nodeSelector."node\.kubernetes\.io/instance-type"=${NODE_INSTANCE_TYPE} \
-      my-release piiano/pvault-server --create-namespace --namespace pvault
+      pvault-server piiano/pvault-server --create-namespace --namespace pvault
     ```
 
 Continue with [post installation](#post-installation) checks.
@@ -158,10 +160,10 @@ See the [Getting Started](https://piiano.com/docs/guides/get-started/) documenta
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-release` release:
+To uninstall/delete the `pvault-server` release:
 
 ```
-$ helm delete my-release
+$ helm delete pvault-server
 ```
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
@@ -283,7 +285,7 @@ It will be supported for the next release.
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```console
-$ helm install my-release \
+$ helm install pvault-server \
   --set db.requireTLS=true piiano/pvault-server
 ```
 
@@ -294,7 +296,7 @@ The above command sets the Piiano Vault Server to require TLS connection to the 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```console
-$ helm install my-release -f values.yaml piiano/pvault-server
+$ helm install pvault-server -f values.yaml piiano/pvault-server
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
