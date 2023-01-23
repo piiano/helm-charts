@@ -191,7 +191,7 @@ It will be supported for the next release.
 | `replicaCount`                                  | Number of Piiano Vault Servers instances to run.                                     | `1`                    |
 | `image.repository`                              | Piiano Vault Server image repositoryl                                                | `piiano/pvault-server` |
 | `image.pullPolicy`                              | Piiano Vault Server image pull policy.                                               | `IfNotPresent`         |
-| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                      | `1.0.2`                |
+| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                      | `1.1.0`                |
 | `imagePullSecrets`                              | Specify image pull secrets.                                                          | `[]`                   |
 | `serviceAccount.create`                         | Whether a service account should be created.                                         | `true`                 |
 | `serviceAccount.annotations`                    | Annotations to add to the service account                                            | `{}`                   |
