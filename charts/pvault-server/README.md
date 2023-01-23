@@ -170,9 +170,6 @@ The command removes all the Kubernetes components associated with the chart and 
 ## Disclaimers
 
 * This chart is provided as Beta version and the usage may break (including values name changes).
-* All parameters starting with `existingSecrets` are not yet supported by Vault as of version 1.0.2. 
-It will be supported for the next release.
-
 
 ## Parameters
 
