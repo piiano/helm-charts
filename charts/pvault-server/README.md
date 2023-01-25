@@ -163,7 +163,7 @@ See the [Getting Started](https://piiano.com/docs/guides/get-started/) documenta
 To uninstall/delete the `pvault-server` release:
 
 ```
-$ helm delete pvault-server
+$ helm -n pvault delete pvault-server
 ```
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
