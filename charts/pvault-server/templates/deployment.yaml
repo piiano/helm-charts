@@ -80,14 +80,13 @@ spec:
               name: {{ include "pvault-server.fullname" . }}-env-vars
           volumeMounts:
           - name: pvault-system-toml-volume
-            mountPath: /etc/pvault/pvault.system.toml # TODO: Change to `/etc/pvault/conf.d` for Vault 1.1.0
-            subPath: pvault.system.toml               # TODO: Remove for Vault 1.1.0
+            mountPath: /etc/pvault/conf.d
           - name: secret-db-password-volume
-            mountPath: /etc/pvault/secret/db_password
+            mountPath: /etc/pvault/secrets/db_password
           - name: secret-admin-api-key-volume
-            mountPath: /etc/pvault/secret/admin_api_key
+            mountPath: /etc/pvault/secrets/admin_api_key
           - name: secret-license-volume
-            mountPath: /etc/pvault/secret/license
+            mountPath: /etc/pvault/secrets/license
           {{- if .Values.dbCARootCertificate}}
           - name: db-ca-cert-volume
             mountPath: /etc/pvault/certs
