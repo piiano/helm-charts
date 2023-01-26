@@ -61,6 +61,7 @@ Deploy Piiano Vault Server on your local Kubernetes cluster while also installin
 helm upgrade --install pvault-server piiano/pvault-server --namespace pvault --create-namespace \
     --set pvault.devmode=true \
     --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
+    --set-string pvault.log.customerIdentifier=my-company-name \
     --set postgresql.enabled=true
 ```
 
@@ -248,10 +249,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `pvault.kms.uri`                          | The KMS key URI used for property encryption.                                                                                                                                                                  | `""`         |
 | `pvault.kms.seed`                         | Generate a local KMS using this seed (KMS_URI can be unset).                                                                                                                                                   | `""`         |
 | `pvault.log.level`                        | Log level (supports `debug`, `info`, `warn`, and `error`).                                                                                                                                                     | `debug`      |
-| `pvault.log.customerEnv`                  | Identifies the environment in all the observability platforms. Recommended values are `PRODUCTION`, `STAGING`, and `DEV`.                                                                                      | `unset`      |
-| `pvault.log.customerIdentifier`           | Identifies the customer in all the observability platforms.                                                                                                                                                    | `unset`      |
-| `pvault.log.datadogEnable`                | Enable Datadog logs and metrics.                                                                                                                                                                               | `false`      |
-| `pvault.log.datadogEnv`                   | Controls env field of logs sent to Datadog.                                                                                                                                                                    | `dev`        |
+| `pvault.log.customerEnv`                  | Identifies the environment in all the observability platforms. Recommended values are `prod`, `staging`, and `dev`.                                                                                            | `dev`        |
+| `pvault.log.customerIdentifier`           | Identifies the customer in all the observability platforms.                                                                                                                                                    | `""`         |
+| `pvault.log.datadogEnable`                | Enable Datadog logs and metrics.                                                                                                                                                                               | `logs,stats` |
 | `pvault.log.datadogAPMEnable`             | Enable Datadog application performance monitoring (APM).                                                                                                                                                       | `false`      |
 | `pvault.sentry.enable`                    | Enable Sentry telemetry logging.                                                                                                                                                                               | `false`      |
 | `pvault.tls.enable`                       | Whether Vault listens on HTTPS (TLS). If `false`, Vault listens on HTTP. If PVAULT_TLS_SELFSIGNED is `true`, this setting is ignored and Vault listens on HTTPS. Default is dependant on `devmode`.            | `nil`        |

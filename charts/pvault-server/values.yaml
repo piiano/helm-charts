@@ -295,18 +295,15 @@ pvault:
     ## @param pvault.log.level Log level (supports `debug`, `info`, `warn`, and `error`).
     ##
     level: debug
-    ## @param pvault.log.customerEnv Identifies the environment in all the observability platforms. Recommended values are `PRODUCTION`, `STAGING`, and `DEV`.
+    ## @param pvault.log.customerEnv Identifies the environment in all the observability platforms. Recommended values are `prod`, `staging`, and `dev`.
     ##
-    customerEnv: unset
+    customerEnv: "dev"
     ## @param pvault.log.customerIdentifier Identifies the customer in all the observability platforms.
     ##
-    customerIdentifier: unset
+    customerIdentifier: ""
     ## @param pvault.log.datadogEnable Enable Datadog logs and metrics.
     ##
-    datadogEnable: false
-    ## @param pvault.log.datadogEnv Controls env field of logs sent to Datadog.
-    ##
-    datadogEnv: dev
+    datadogEnable: "logs,stats"
     ## @param pvault.log.datadogAPMEnable Enable Datadog application performance monitoring (APM).
     ##
     datadogAPMEnable: false

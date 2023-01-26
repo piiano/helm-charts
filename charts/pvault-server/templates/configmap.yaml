@@ -69,11 +69,10 @@ data:
 
     [log]
     level               = {{ .Values.pvault.log.level | quote }}
-    datadog_enable      = {{ .Values.pvault.log.datadogEnable }}
-    datadog_env         = {{ .Values.pvault.log.datadogEnv | quote }}
+    datadog_enable      = {{ .Values.pvault.log.datadogEnable | quote }}
     datadog_apm_enable  = {{ .Values.pvault.log.datadogAPMEnable }}
     customer_env        = {{ .Values.pvault.log.customerEnv | quote }}
-    customer_identifier = {{ .Values.pvault.log.customerIdentifier | quote }}
+    customer_identifier = {{ required "A valid .Values.pvault.log.customerIdentifier is required." .Values.pvault.log.customerIdentifier | quote }}
 
     [sentry]
     enable = {{ .Values.pvault.sentry.enable }}
