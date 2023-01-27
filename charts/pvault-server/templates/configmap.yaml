@@ -9,8 +9,8 @@
 {{ $dbName = default "pvault" .Values.postgresql.auth.database | quote }}
 {{ $dbUser = default "pvault" .Values.postgresql.auth.username | quote }}
 {{- else }}
-{{ $dbHost = required "A valid .Values.pvault.db.name entry required!" .Values.pvault.db.hostname | quote }}
-{{ $dbName = required "A valid .Values.pvault.db.hostname entry required!" .Values.pvault.db.name | quote }}
+{{ $dbHost = required "A valid .Values.pvault.db.hostname entry required!" .Values.pvault.db.hostname | quote }}
+{{ $dbName = required "A valid .Values.pvault.db.name entry required!" .Values.pvault.db.name | quote }}
 {{ $dbUser = required "A valid .Values.pvault.db.user entry required!" .Values.pvault.db.user | quote }}
 {{- end }}
 
