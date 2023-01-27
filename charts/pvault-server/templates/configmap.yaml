@@ -2,19 +2,16 @@
 {{  $dbHost := "" }}
 {{  $dbName := "" }}
 {{  $dbUser := "" }}
-{{  $dbPass := "" }}
 
 # If dev psql is enabled, override Vault configurations. Otherwise, enforce them.
 {{- if .Values.postgresql.enabled }}
-{{ $dbHost =  printf "%s-postgresql" .Chart.Name | quote }}
-{{ $dbName =  default "pvault" .Values.postgresql.auth.database | quote }}
-{{ $dbUser =  default "pvault" .Values.postgresql.auth.username | quote }}
-{{ $dbPass =  default "pvault" .Values.postgresql.auth.password | quote }}
+{{ $dbHost = printf "%s-postgresql" .Chart.Name | quote }}
+{{ $dbName = default "pvault" .Values.postgresql.auth.database | quote }}
+{{ $dbUser = default "pvault" .Values.postgresql.auth.username | quote }}
 {{- else }}
-{{ $dbHost =  required "A valid .Values.pvault.db.name entry required!" .Values.pvault.db.hostname | quote }}
-{{ $dbName =  required "A valid .Values.pvault.db.hostname entry required!" .Values.pvault.db.name | quote }}
-{{ $dbUser =  required "A valid .Values.pvault.db.user entry required!" .Values.pvault.db.user | quote }}
-{{ $dbPass =  required "A valid .Values.pvault.db.password entry required!" .Values.pvault.db.password | quote }}
+{{ $dbHost = required "A valid .Values.pvault.db.name entry required!" .Values.pvault.db.hostname | quote }}
+{{ $dbName = required "A valid .Values.pvault.db.hostname entry required!" .Values.pvault.db.name | quote }}
+{{ $dbUser = required "A valid .Values.pvault.db.user entry required!" .Values.pvault.db.user | quote }}
 {{- end }}
 
 kind: ConfigMap
@@ -35,7 +32,6 @@ data:
     hostname    = {{ $dbHost }}
     name        = {{ $dbName }}
     user        = {{ $dbUser }}
-    password    = {{ $dbPass }}
     port        = {{ .Values.pvault.db.port }}
     {{- if kindIs "bool" .Values.pvault.db.requireTLS }}
     require_tls = {{ .Values.pvault.db.requireTLS }}
@@ -43,7 +39,6 @@ data:
 
     [service]
     listen_addr         = "0.0.0.0:8123"
-    admin_api_key       = {{ .Values.pvault.app.adminAPIKey | quote }}
     {{- if kindIs "bool" .Values.pvault.app.adminMayReadData }}
     admin_may_read_data = {{ .Values.pvault.app.adminMayReadData }}
     {{ end }}
@@ -51,7 +46,6 @@ data:
     cache_refresh_interval_seconds = {{ .Values.pvault.app.cacheRefreshIntervalSeconds }}
     default_page_size   = {{ .Values.pvault.app.defaultPageSize }}
     max_page_size       = {{ .Values.pvault.app.maxPageSize }}
-    license             = {{ required "A valid .Values.pvault.app.license entry required!" .Values.pvault.app.license | quote }}
 
 
     [tls]
@@ -75,11 +69,10 @@ data:
 
     [log]
     level               = {{ .Values.pvault.log.level | quote }}
-    datadog_enable      = {{ .Values.pvault.log.datadogEnable }}
-    datadog_env         = {{ .Values.pvault.log.datadogEnv | quote }}
+    datadog_enable      = {{ .Values.pvault.log.datadogEnable | quote }}
     datadog_apm_enable  = {{ .Values.pvault.log.datadogAPMEnable }}
     customer_env        = {{ .Values.pvault.log.customerEnv | quote }}
-    customer_identifier = {{ .Values.pvault.log.customerIdentifier | quote }}
+    customer_identifier = {{ required "A valid .Values.pvault.log.customerIdentifier is required." .Values.pvault.log.customerIdentifier | quote }}
 
     [sentry]
     enable = {{ .Values.pvault.sentry.enable }}

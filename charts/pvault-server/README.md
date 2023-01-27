@@ -61,6 +61,7 @@ Deploy Piiano Vault Server on your local Kubernetes cluster while also installin
 helm upgrade --install pvault-server piiano/pvault-server --namespace pvault --create-namespace \
     --set pvault.devmode=true \
     --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
+    --set-string pvault.log.customerIdentifier=my-company-name \
     --set postgresql.enabled=true
 ```
 
@@ -141,7 +142,7 @@ You can then use the [Piiano Vault CLI](https://piiano.com/docs/cli) to interact
 
 ```sh
 # For easier interaction with the containerized CLI, set an alias.
-alias pvault="docker run --rm -i -v $(pwd):/pwd -w /pwd piiano/pvault-cli:1.0.2"
+alias pvault="docker run --rm -i -v $(pwd):/pwd -w /pwd piiano/pvault-cli:1.1.2"
 
 pvault status
 ```
@@ -163,16 +164,13 @@ See the [Getting Started](https://piiano.com/docs/guides/get-started/) documenta
 To uninstall/delete the `pvault-server` release:
 
 ```
-$ helm delete pvault-server
+$ helm delete pvault-server --namespace pvault
 ```
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
 ## Disclaimers
 
 * This chart is provided as Beta version and the usage may break (including values name changes).
-* All parameters starting with `existingSecrets` are not yet supported by Vault as of version 1.0.2. 
-It will be supported for the next release.
-
 
 ## Parameters
 
@@ -191,7 +189,7 @@ It will be supported for the next release.
 | `replicaCount`                                  | Number of Piiano Vault Servers instances to run.                                     | `1`                    |
 | `image.repository`                              | Piiano Vault Server image repositoryl                                                | `piiano/pvault-server` |
 | `image.pullPolicy`                              | Piiano Vault Server image pull policy.                                               | `IfNotPresent`         |
-| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                      | `1.0.2`                |
+| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                      | `1.1.2`                |
 | `imagePullSecrets`                              | Specify image pull secrets.                                                          | `[]`                   |
 | `serviceAccount.create`                         | Whether a service account should be created.                                         | `true`                 |
 | `serviceAccount.annotations`                    | Annotations to add to the service account                                            | `{}`                   |
@@ -251,10 +249,9 @@ It will be supported for the next release.
 | `pvault.kms.uri`                          | The KMS key URI used for property encryption.                                                                                                                                                                  | `""`         |
 | `pvault.kms.seed`                         | Generate a local KMS using this seed (KMS_URI can be unset).                                                                                                                                                   | `""`         |
 | `pvault.log.level`                        | Log level (supports `debug`, `info`, `warn`, and `error`).                                                                                                                                                     | `debug`      |
-| `pvault.log.customerEnv`                  | Identifies the environment in all the observability platforms. Recommended values are `PRODUCTION`, `STAGING`, and `DEV`.                                                                                      | `unset`      |
-| `pvault.log.customerIdentifier`           | Identifies the customer in all the observability platforms.                                                                                                                                                    | `unset`      |
-| `pvault.log.datadogEnable`                | Enable Datadog logs and metrics.                                                                                                                                                                               | `false`      |
-| `pvault.log.datadogEnv`                   | Controls env field of logs sent to Datadog.                                                                                                                                                                    | `dev`        |
+| `pvault.log.customerEnv`                  | Identifies the environment in all the observability platforms. Recommended values are `prod`, `staging`, and `dev`.                                                                                            | `dev`        |
+| `pvault.log.customerIdentifier`           | Identifies the customer in all the observability platforms.                                                                                                                                                    | `""`         |
+| `pvault.log.datadogEnable`                | Enable Datadog logs and metrics.                                                                                                                                                                               | `logs,stats` |
 | `pvault.log.datadogAPMEnable`             | Enable Datadog application performance monitoring (APM).                                                                                                                                                       | `false`      |
 | `pvault.sentry.enable`                    | Enable Sentry telemetry logging.                                                                                                                                                                               | `false`      |
 | `pvault.tls.enable`                       | Whether Vault listens on HTTPS (TLS). If `false`, Vault listens on HTTP. If PVAULT_TLS_SELFSIGNED is `true`, this setting is ignored and Vault listens on HTTPS. Default is dependant on `devmode`.            | `nil`        |

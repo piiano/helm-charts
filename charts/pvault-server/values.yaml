@@ -26,7 +26,7 @@ image:
   pullPolicy: IfNotPresent
   ## @param image.tag Piiano Vault Server image tag (immutable tags are recommended).
   #
-  tag: "1.0.2"
+  tag: "1.1.2"
 
 ## @param imagePullSecrets Specify image pull secrets.
 ##
@@ -86,6 +86,7 @@ service:
   port: 8123
 
 ## Configure the ingress resource that allows you to access Piiano Vault Server.
+## ref: https://kubernetes.io/docs/user-guide/ingress/
 ##
 ingress:
   ## @param ingress.enabled Enable ingress generation.
@@ -104,9 +105,10 @@ ingress:
   ## @param ingress.hosts An array with additional hostname(s) to be covered with the ingress record.
   ## e.g:
   ## hosts:
-  ## - name: schema-registry.local
-  ##   path: /
-  ##
+  ## - host: schema-registry.local
+  ##   paths:
+  ##     - path: /
+  ##       pathType: Prefix
   hosts:
   ## @param ingress.tls TLS configuration for additional hostname(s) to be covered with this ingress record.
   ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
@@ -293,18 +295,15 @@ pvault:
     ## @param pvault.log.level Log level (supports `debug`, `info`, `warn`, and `error`).
     ##
     level: debug
-    ## @param pvault.log.customerEnv Identifies the environment in all the observability platforms. Recommended values are `PRODUCTION`, `STAGING`, and `DEV`.
+    ## @param pvault.log.customerEnv Identifies the environment in all the observability platforms. Recommended values are `prod`, `staging`, and `dev`.
     ##
-    customerEnv: unset
+    customerEnv: "dev"
     ## @param pvault.log.customerIdentifier Identifies the customer in all the observability platforms.
     ##
-    customerIdentifier: unset
+    customerIdentifier: ""
     ## @param pvault.log.datadogEnable Enable Datadog logs and metrics.
     ##
-    datadogEnable: false
-    ## @param pvault.log.datadogEnv Controls env field of logs sent to Datadog.
-    ##
-    datadogEnv: dev
+    datadogEnable: "logs,stats"
     ## @param pvault.log.datadogAPMEnable Enable Datadog application performance monitoring (APM).
     ##
     datadogAPMEnable: false
