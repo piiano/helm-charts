@@ -69,13 +69,9 @@ data:
 
     [log]
     level               = {{ .Values.pvault.log.level | quote }}
-    datadog_enable      = {{ .Values.pvault.log.datadogEnable | quote }}
     datadog_apm_enable  = {{ .Values.pvault.log.datadogAPMEnable }}
     customer_env        = {{ .Values.pvault.log.customerEnv | quote }}
     customer_identifier = {{ required "A valid .Values.pvault.log.customerIdentifier is required." .Values.pvault.log.customerIdentifier | quote }}
-
-    [sentry]
-    enable = {{ .Values.pvault.sentry.enable }}
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -83,7 +79,9 @@ metadata:
   name: {{ include "pvault-server.fullname" . }}-env-vars
   labels:
     {{- include "pvault-server.labels" . | nindent 4 }}
-{{- with .Values.pvault.extraEnvVars }}
 data:
+  PVAULT_LOG_DATADOG_ENABLE: {{ required "A valid .Values.pvault.log.datadogEnable is required" .Values.pvault.log.datadogEnable | quote }}
+  PVAULT_SENTRY_ENABLE: {{ required "A valid .Values.pvault.sentry.enable is required" .Values.pvault.sentry.enable | quote }}
+{{- with .Values.pvault.extraEnvVars }}
   {{- toYaml . | nindent 2 }}
 {{- end }}
