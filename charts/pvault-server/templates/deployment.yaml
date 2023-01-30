@@ -84,7 +84,7 @@ spec:
           - name: secret-db-password-volume
             mountPath: /etc/pvault/secrets/db_password
           - name: secret-admin-api-key-volume
-            mountPath: /etc/pvault/secrets/admin_api_key
+            mountPath: /etc/pvault/secrets/api_key
           - name: secret-license-volume
             mountPath: /etc/pvault/secrets/license
           {{- if .Values.dbCARootCertificate}}
