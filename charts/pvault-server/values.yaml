@@ -310,7 +310,7 @@ pvault:
   sentry:
     ## @param pvault.sentry.enable Enable Sentry telemetry logging.
     ##
-    enable: false
+    enable: true
   ## Piiano Vault TLS.
   ## ref: https://piiano.com/docs/guides/configure/environment-variables#tls
   ##
