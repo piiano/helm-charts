@@ -26,7 +26,7 @@ image:
   pullPolicy: IfNotPresent
   ## @param image.tag Piiano Vault Server image tag (immutable tags are recommended).
   #
-  tag: "1.1.5"
+  tag: "1.2.2"
 
 ## @param imagePullSecrets Specify image pull secrets.
 ##
@@ -303,7 +303,7 @@ pvault:
     customerIdentifier: ""
     ## @param pvault.log.datadogEnable Enable Datadog logs and metrics.
     ##
-    datadogEnable: "logs,stats"
+    datadogEnable: "logs,stats,config"
     ## @param pvault.log.datadogAPMEnable Enable Datadog application performance monitoring (APM).
     ##
     datadogAPMEnable: false
