@@ -45,7 +45,7 @@ jobs:
 
       - name: Update Vault Version
         run: |
-          ./bump_versions.sh ${{ inputs.vault_version }}  ${{ inputs.bump-package }}
+          ./bump_versions.sh ${{ inputs.vault_version }} ${{ inputs.bump-package }}
 
           git_status=$(git status -s)
 
