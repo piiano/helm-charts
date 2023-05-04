@@ -2,8 +2,8 @@ apiVersion: v2
 name: pvault-server
 description: Official Helm chart for Piiano Vault Server
 type: application
-version: "0.3.4"
-appVersion: "1.2.2"
+version: "0.3.5"
+appVersion: "1.4.0"
 dependencies:
   - name: postgresql
     version: "14.x.x"
