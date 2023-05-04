@@ -217,6 +217,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | `nodeSelector`                                  | Node labels for pod assignment.                                                      | `{}`                   |
 | `tolerations`                                   | Tolerations for pod assignment.                                                      | `[]`                   |
 | `affinity`                                      | Affinity for pod assignment.                                                         | `{}`                   |
+| `additionalSecretsAnnotations`                  | Add annotations to the Kubernetes secret.                                            | `{}`                   |
+| `additionalConfigMapAnnotations`                | Add annotations to the ConfigMaps.                                                   | `{}`                   |
 
 
 ### Piiano Vault parameters
