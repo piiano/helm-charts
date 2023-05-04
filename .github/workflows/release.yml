@@ -1,6 +1,25 @@
-name: Release Charts
-
+name: Publish
 on:
+  workflow_dispatch:
+    inputs:
+      vault_version:
+        description: "Vault version"
+        required: true
+        type: string
+      bump-package:
+        description: |-
+          How to bump `helm chart` version:
+          - `none` - do not bump version and do not publish
+          - `patch` - bump patch version
+          - `minor` - bump minor version
+          - `major` - bump major version
+        default: none
+        type: choice
+        options:
+          - none
+          - patch
+          - minor
+          - major
   push:
     branches:
       - main
@@ -10,18 +29,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.CICD_RELEASES_PAT }}
 
       - name: Configure Git
         run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config --global user.email "cicd@piiano.com"
+          git config --global user.name "Github Actions"
 
       - name: Install dependency repos
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
+
+      - name: Update Vault Version
+        if: inputs.bump-package != 'none'
+        run: |
+          ./bump_versions.sh ${{ inputs.vault_version }} ${{ inputs.bump-package }}
+
+          git_status=$(git status -s)
+
+          if [ -n "$git_status" ]; then
+            echo "There are changes to commit"
+            git add .
+            git commit -a -m 'Bump helm for a new vault version ${{ inputs.vault_version }}'
+            git push
+          else
+            echo "No changes to commit"
+          fi
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.1

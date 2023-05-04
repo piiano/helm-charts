@@ -2,14 +2,14 @@ apiVersion: v2
 name: pvault-server
 description: Official Helm chart for Piiano Vault Server
 type: application
-version: 0.3.4
+version: "0.3.4"
 appVersion: "1.2.2"
 dependencies:
   - name: postgresql
-    version: "12.x.x"
+    version: "14.x.x"
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 home: https://piiano.com/pii-data-privacy-vault/
 keywords: ["piiano", "vault", "pvault", "privacy", "tokenization", "encryption", "pci"]
 sources:
-  - TBD
+  - https://github.com/piiano/helm-charts/blob/main/charts/pvault-server/Chart.yaml
