@@ -6,7 +6,7 @@ version: "0.3.5"
 appVersion: "1.4.0"
 dependencies:
   - name: postgresql
-    version: "14.x.x"
+    version: "12.x.x"
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 home: https://piiano.com/pii-data-privacy-vault/
