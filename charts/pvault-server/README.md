@@ -15,6 +15,8 @@ To see all the available configurations, please refer to [Piiano Vault documenta
 
 These are the earliest versions that have been tested. Earlier versions may also work.
 
+This package is compatible with Vault version 1.2.2
+
 ## Installing the Chart
 
 Add the repository:
