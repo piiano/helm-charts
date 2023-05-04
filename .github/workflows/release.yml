@@ -44,6 +44,7 @@ jobs:
           helm repo add bitnami https://charts.bitnami.com/bitnami
 
       - name: Update Vault Version
+        if: inputs.bump-package != 'none'
         run: |
           ./bump_versions.sh ${{ inputs.vault_version }} ${{ inputs.bump-package }}
 
