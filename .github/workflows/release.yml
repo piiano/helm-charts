@@ -20,9 +20,6 @@ on:
           - patch
           - minor
           - major
-  push:
-    branches:
-      - main
 
 jobs:
   release:
