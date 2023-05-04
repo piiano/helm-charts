@@ -173,6 +173,15 @@ tolerations: []
 ##
 affinity: {}
 
+## @param additionalSecretsAnnotations Add annotations to the Kubernetes secret.
+##
+additionalSecretsAnnotations: {}
+
+## @param additionalConfigMapAnnotations Add annotations to the ConfigMaps.
+##
+additionalConfigMapAnnotations: {}
+
+
 ##################
 
 ## @section Piiano Vault parameters

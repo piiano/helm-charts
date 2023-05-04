@@ -20,6 +20,10 @@ metadata:
   name: {{ include "pvault-server.fullname" . }}-variables
   labels:
     {{- include "pvault-server.labels" . | nindent 4 }}
+  {{- with .Values.additionalConfigMapAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 data:
   pvault.system.toml: |
     # -----------------------------
@@ -79,6 +83,10 @@ metadata:
   name: {{ include "pvault-server.fullname" . }}-env-vars
   labels:
     {{- include "pvault-server.labels" . | nindent 4 }}
+  {{- with .Values.additionalConfigMapAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 data:
   PVAULT_LOG_DATADOG_ENABLE: {{ required "A valid .Values.pvault.log.datadogEnable is required" .Values.pvault.log.datadogEnable | quote }}
   PVAULT_SENTRY_ENABLE: {{ required "A valid .Values.pvault.sentry.enable is required" .Values.pvault.sentry.enable | quote }}
