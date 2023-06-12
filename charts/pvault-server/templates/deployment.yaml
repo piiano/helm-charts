@@ -1,3 +1,6 @@
+{{ $hasKmsSeed := or .Values.pvault.kms.existingSeedSecret .Values.pvault.kms.seed }}
+{{ $hasKmsExportSeed := or .Values.pvault.kms.existingExportSeedSecret .Values.pvault.kms.exportSeed }}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -87,6 +90,14 @@ spec:
             mountPath: /etc/pvault/secrets/api_key
           - name: secret-license-volume
             mountPath: /etc/pvault/secrets/license
+          {{- if $hasKmsSeed }}
+          - name: secret-kms-seed-volume
+            mountPath: /etc/pvault/secrets/kms_seed
+          {{- end -}}
+          {{- if $hasKmsExportSeed }}
+          - name: secret-kms-export-seed-volume
+            mountPath: /etc/pvault/secrets/kms_export_seed
+          {{- end -}}
           {{- if .Values.dbCARootCertificate}}
           - name: db-ca-cert-volume
             mountPath: /etc/pvault/certs
@@ -98,6 +109,12 @@ spec:
       {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-db-password-volume" "existingSecret" .Values.pvault.db.existingPasswordSecret "existingSecretKey" .Values.pvault.db.existingPasswordSecretKey "defaultSecretKey" "pvault-db-password" "context" .) | indent 6 }}
       {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-admin-api-key-volume" "existingSecret" .Values.pvault.app.existingAdminAPIKeySecret "existingSecretKey" .Values.pvault.app.existingAdminAPIKeySecretKey "defaultSecretKey" "admin-api-key" "context" .) | indent 6 }}
       {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-license-volume" "existingSecret" .Values.pvault.app.existingLicenseSecret "existingSecretKey" .Values.pvault.app.existingLicenseSecretKey "defaultSecretKey" "license" "context" .) | indent 6 }}
+      {{- if $hasKmsSeed }}
+      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-kms-seed-volume" "existingSecret" .Values.pvault.kms.existingSeedSecret "existingSecretKey" .Values.pvault.kms.existingSeedSecretKey "defaultSecretKey" "kms-seed" "context" .) | indent 6 }}
+      {{- end -}}
+      {{- if $hasKmsExportSeed }}
+      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-kms-export-seed-volume" "existingSecret" .Values.pvault.kms.existingExportSeedSecret "existingSecretKey" .Values.pvault.kms.existingExportSeedSecretKey "defaultSecretKey" "kms-export-seed" "context" .) | indent 6 }}
+      {{- end -}}
       {{- if .Values.dbCARootCertificate}}
       - name: db-ca-cert-volume
         configMap:

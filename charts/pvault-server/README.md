@@ -183,7 +183,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `nameOverride`     | String to override the default chart name.               | `""`  |
 | `fullnameOverride` | String to override the default fully qualified app name. | `""`  |
 
-
 ### Controller parameters
 
 | Name                                            | Description                                                                          | Value                  |
@@ -220,7 +219,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `additionalSecretsAnnotations`                  | Add annotations to the Kubernetes secret.                                            | `{}`                   |
 | `additionalConfigMapAnnotations`                | Add annotations to the ConfigMaps.                                                   | `{}`                   |
 
-
 ### Piiano Vault parameters
 
 | Name                                      | Description                                                                                                                                                                                                    | Value               |
@@ -252,6 +250,13 @@ The command removes all the Kubernetes components associated with the chart and 
 | `pvault.app.existingLicenseSecretKey`     | The key in an existing secret that contains the license.                                                                                                                                                       | `""`                |
 | `pvault.kms.uri`                          | The KMS key URI used for property encryption.                                                                                                                                                                  | `""`                |
 | `pvault.kms.seed`                         | Generate a local KMS using this seed (KMS_URI can be unset).                                                                                                                                                   | `""`                |
+| `pvault.kms.exportUri`                    | The KMS key URI used for encryption by the Vault export procedure.                                                                                                                                             | `""`                |
+| `pvault.kms.exportSeed`                   | The seed for generating a local KMS for the Vault export procedure (KMS_EXPORT_URI can be unset).                                                                                                              | `""`                |
+| `pvault.kms.existingSeedSecret`           | The name of an existing secret containing the KMS seed.                                                                                                                                                        | `""`                |
+| `pvault.kms.existingSeedSecretKey`        | The key in an existing secret that contains the KMS seed.                                                                                                                                                      | `""`                |
+| `pvault.kms.existingExportSeedSecret`     | The name of an existing secret containing the KMS export seed.                                                                                                                                                 | `""`                |
+| `pvault.kms.existingExportSeedSecretKey`  | The key in an existing secret that contains the KMS export seed.                                                                                                                                               | `""`                |
+| `pvault.kms.allow_local`                  | Whether to allow a local KMS using a URI or seed. Default is dependant on `devmode`.                                                                                                                           | `nil`               |
 | `pvault.log.level`                        | Log level (supports `debug`, `info`, `warn`, and `error`).                                                                                                                                                     | `debug`             |
 | `pvault.log.customerEnv`                  | Identifies the environment in all the observability platforms. Recommended values are `prod`, `staging`, and `dev`.                                                                                            | `dev`               |
 | `pvault.log.customerIdentifier`           | Identifies the customer in all the observability platforms.                                                                                                                                                    | `""`                |
@@ -264,13 +269,11 @@ The command removes all the Kubernetes components associated with the chart and 
 | `pvault.tls.keyFile`                      | Path to the TLS key file. Must be valid to enable listening on HTTPS (TLS).                                                                                                                                    | `""`                |
 | `pvault.extraEnvVars`                     | Overriding environment variables.                                                                                                                                                                              | `{}`                |
 
-
 ### Environment parameters
 
 | Name                  | Description                                                                   | Value |
 | --------------------- | ----------------------------------------------------------------------------- | ----- |
 | `dbCARootCertificate` | Content of the CA certificate for the database TLS connection, in PEM format. | `nil` |
-
 
 ### Dependencies parameters
 
