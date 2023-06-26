@@ -42,15 +42,16 @@ data:
     {{ end }}
 
     [service]
-    listen_addr         = "0.0.0.0:8123"
+    listen_addr             = "0.0.0.0:8123"
     {{- if kindIs "bool" .Values.pvault.app.adminMayReadData }}
-    admin_may_read_data = {{ .Values.pvault.app.adminMayReadData }}
+    admin_may_read_data     = {{ .Values.pvault.app.adminMayReadData }}
     {{ end }}
-    timeout_seconds     = {{ .Values.pvault.app.timeoutSeconds }}
+    timeout_seconds         = {{ .Values.pvault.app.timeoutSeconds }}
     cache_refresh_interval_seconds = {{ .Values.pvault.app.cacheRefreshIntervalSeconds }}
-    default_page_size   = {{ .Values.pvault.app.defaultPageSize }}
-    max_page_size       = {{ .Values.pvault.app.maxPageSize }}
-
+    default_page_size       = {{ .Values.pvault.app.defaultPageSize }}
+    max_page_size           = {{ .Values.pvault.app.maxPageSize }}
+    set_iam_on_start_only   = {{ .Values.pvault.app.setIAMOnStartOnly }}
+    update_schema_on_start  = {{ .Values.pvault.app.updateSchemaOnStart }}
 
     [tls]
     {{- if kindIs "bool" .Values.pvault.tls.enable }}
@@ -79,6 +80,18 @@ data:
     datadog_apm_enable  = {{ .Values.pvault.log.datadogAPMEnable }}
     customer_env        = {{ .Values.pvault.log.customerEnv | quote }}
     customer_identifier = {{ required "A valid .Values.pvault.log.customerIdentifier is required." .Values.pvault.log.customerIdentifier | quote }}
+  {{- with .Values.pvault.startupIAMFile }}
+  pvault.iam.toml: |-
+    {{- . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.pvault.startupCollectionsFile }}
+  pvault.collections.pvschema: |-
+    {{- . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.pvault.startupDataTypesFile }}
+  pvault.types.toml: |-
+    {{- . | nindent 4 }}
+  {{- end }}
 ---
 kind: ConfigMap
 apiVersion: v1

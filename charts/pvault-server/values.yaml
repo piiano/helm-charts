@@ -286,6 +286,14 @@ pvault:
     ## Note: Only used when existingLicenseSecret is set.
     ##
     existingLicenseSecretKey: ""
+    ## @param pvault.app.setIAMOnStartOnly Whether to load the IAM configuration file every time Vault starts.
+    ## ref: https://piiano.com/docs/guides/configure/custom-configuration-file#iam-configuration-file
+    ##
+    setIAMOnStartOnly: false
+    ## @param pvault.app.updateSchemaOnStart Whether to update the collections schema every time Vault starts.
+    ## ref: https://piiano.com/docs/guides/configure/custom-configuration-file#collections-configuration-file
+    ##
+    updateSchemaOnStart: false
 
   ## Piiano Vault KMS.
   ## ref: https://piiano.com/docs/guides/configure/environment-variables#key-management-service
@@ -363,6 +371,19 @@ pvault:
     ## @param pvault.tls.keyFile Path to the TLS key file. Must be valid to enable listening on HTTPS (TLS).
     ##
     keyFile: ""
+
+  ## @param pvault.startupIAMFile Vault startup file for IAM configuration.
+  ## ref: https://piiano.com/docs/guides/configure/custom-configuration-file#iam-configuration-file
+  ##
+  startupIAMFile: ""
+  ## @param pvault.startupCollectionsFile Vault startup file for schema configuration.
+  ## ref:https://piiano.com/docs/guides/configure/custom-configuration-file#collections-configuration-file
+  ##
+  startupCollectionsFile: ""
+  ## @param pvault.startupDataTypesFile Vault startup file for data types configuration.
+  ## ref: https://piiano.com/docs/guides/configure/custom-configuration-file#data-types-configuration-file
+  ##
+  startupDataTypesFile: ""
 
   ## @param pvault.extraEnvVars Overriding environment variables.
   ##
