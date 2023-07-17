@@ -2,6 +2,32 @@ apiVersion: v1
 entries:
   pvault-server:
   - apiVersion: v2
+    appVersion: 1.8.0
+    created: "2023-07-17T12:17:04.636676329Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.x.x
+    description: Official Helm chart for Piiano Vault Server
+    digest: 108a7791f09fabc057a5a22448e49acf5d8f05fba4fb1dbfb305faefb9fd01e8
+    home: https://piiano.com/pii-data-privacy-vault/
+    keywords:
+    - piiano
+    - vault
+    - pvault
+    - privacy
+    - tokenization
+    - encryption
+    - pci
+    name: pvault-server
+    sources:
+    - https://github.com/piiano/helm-charts/blob/main/charts/pvault-server/Chart.yaml
+    type: application
+    urls:
+    - https://github.com/piiano/helm-charts/releases/download/pvault-server-0.4.6/pvault-server-0.4.6.tgz
+    version: 0.4.6
+  - apiVersion: v2
     appVersion: 1.7.1
     created: "2023-07-05T17:29:20.991309679Z"
     dependencies:
@@ -360,4 +386,4 @@ entries:
     urls:
     - https://github.com/piiano/helm-charts/releases/download/pvault-server-0.1.1/pvault-server-0.1.1.tgz
     version: 0.1.1
-generated: "2023-07-05T17:29:20.991390279Z"
+generated: "2023-07-17T12:17:04.63677683Z"
