@@ -69,7 +69,10 @@ data:
 
     [kms]
     uri   = {{ .Values.pvault.kms.uri | quote }}
-    seed  = {{ .Values.pvault.kms.seed | quote }}
+    export_uri  = {{ .Values.pvault.kms.exportUri | quote }}
+    {{- if kindIs "bool" .Values.pvault.kms.allow_local }}
+    enable = {{ .Values.pvault.kms.allow_local }}
+    {{ end }}
 
     [log]
     level               = {{ .Values.pvault.log.level | quote }}

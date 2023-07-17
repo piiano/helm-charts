@@ -297,6 +297,33 @@ pvault:
     ## @param pvault.kms.seed Generate a local KMS using this seed (KMS_URI can be unset).
     ##
     seed: ""
+    ## @param pvault.kms.exportUri The KMS key URI used for encryption by the Vault export procedure.
+    ##
+    exportUri: ""
+    ## @param pvault.kms.exportSeed The seed for generating a local KMS for the Vault export procedure (KMS_EXPORT_URI can be unset).
+    ##
+    exportSeed: ""
+    ## @param pvault.kms.existingSeedSecret The name of an existing secret containing the KMS seed.
+    ## Note: Must contain a key as specified by existingSeedSecretKey.
+    ## Note: If set, the `seed` parameter is ignored.
+    ##
+    existingSeedSecret: ""
+    ## @param pvault.kms.existingSeedSecretKey The key in an existing secret that contains the KMS seed.
+    ## Note: Only used when existingSeedSecret is set.
+    ##
+    existingSeedSecretKey: ""
+    ## @param pvault.kms.existingExportSeedSecret The name of an existing secret containing the KMS export seed.
+    ## Note: Must contain a key as specified by existingExportSeedSecretKey.
+    ## Note: If set, the `seed` parameter is ignored.
+    ##
+    existingExportSeedSecret: ""
+    ## @param pvault.kms.existingExportSeedSecretKey The key in an existing secret that contains the KMS export seed.
+    ## Note: Only used when existingExportSeedSecret is set.
+    ##
+    existingExportSeedSecretKey: ""
+    ## @param pvault.kms.allow_local Whether to allow a local KMS using a URI or seed. Default is dependant on `devmode`.
+    ##
+    allow_local: null
   ## Piiano Vault Logs and Telemetry.
   ## ref: https://piiano.com/docs/guides/configure/environment-variables#logs-and-telemetry
   ##
