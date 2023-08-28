@@ -15,7 +15,7 @@ To see all the available configurations, please refer to [Piiano Vault documenta
 
 These are the earliest versions that have been tested. Earlier versions may also work.
 
-This package is compatible with Vault version 1.8.1
+This package is compatible with Vault version 1.8.2
 
 ## Installing the Chart
 
@@ -190,7 +190,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `replicaCount`                                  | Number of Piiano Vault Servers instances to run.                                     | `1`                    |
 | `image.repository`                              | Piiano Vault Server image repositoryl                                                | `piiano/pvault-server` |
 | `image.pullPolicy`                              | Piiano Vault Server image pull policy.                                               | `IfNotPresent`         |
-| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                      | `1.8.1`                |
+| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                      | `1.8.2`                |
 | `imagePullSecrets`                              | Specify image pull secrets.                                                          | `[]`                   |
 | `serviceAccount.create`                         | Whether a service account should be created.                                         | `true`                 |
 | `serviceAccount.annotations`                    | Annotations to add to the service account                                            | `{}`                   |
