@@ -42,7 +42,7 @@ serviceAccount:
   ## @param serviceAccount.annotations Annotations to add to the service account
   ##
   annotations: {}
-  ## @param serviceAccount.name The name of the service account to use. 
+  ## @param serviceAccount.name The name of the service account to use.
   ## If not set and create is true, a name is generated using the fullname template.
   ##
   name: ""
@@ -67,7 +67,7 @@ podSecurityContext: {}
 securityContext:
   allowPrivilegeEscalation: false
   capabilities:
-      drop:
+    drop:
       - ALL
   privileged: false
   readOnlyRootFilesystem: true
@@ -118,7 +118,6 @@ ingress:
   ##   hosts:
   ##     - chart-example.local
   tls: []
-
 
 ## Controller container resource requests and limits.
 ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
@@ -180,7 +179,6 @@ additionalSecretsAnnotations: {}
 ## @param additionalConfigMapAnnotations Add annotations to the ConfigMaps.
 ##
 additionalConfigMapAnnotations: {}
-
 
 ##################
 
