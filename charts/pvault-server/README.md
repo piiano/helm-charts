@@ -196,6 +196,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `serviceAccount.annotations`                    | Annotations to add to the service account                                            | `{}`                   |
 | `serviceAccount.name`                           | The name of the service account to use.                                              | `""`                   |
 | `dnsPolicy`                                     | Default dnsPolicy setting                                                            | `ClusterFirst`         |
+| `podLabels`                                     | Add labels to Piiano Vault Server pods.                                              | `{}`                   |
 | `podAnnotations`                                | Add annotations to Piiano Vault Server pods.                                         | `{}`                   |
 | `podSecurityContext`                            | Pod Security Context configuration.                                                  | `{}`                   |
 | `securityContext`                               | Security Context configuration.                                                      | `{}`                   |
