@@ -78,15 +78,15 @@ Use the following command line to deploy Piiano Vault Server on a typical Kubern
 1. Set the parameters: `DB_USER`, `DB_PASS`, `DB_HOST` and `DB_NAME`.
 2. Run:
   ```console
-    helm upgrade --install \
+    helm upgrade --install pvault-server piiano/pvault-server \ 
+      --create-namespace --namespace pvault \
       --set pvault.devmode=true \
       --set-string pvault.db.user=${DB_USER} \
       --set-string pvault.db.password=${DB_PASS} \
       --set-string pvault.db.hostname=${DB_HOST} \
       --set-string pvault.db.name=${DB_NAME} \
       --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
-      --set-string pvault.log.customerIdentifier=my-company-name \
-      pvault-server piiano/pvault-server --create-namespace --namespace pvault
+      --set-string pvault.log.customerIdentifier=my-company-name
   ```
 
 Continue with [post installation](#post-installation) checks.
@@ -101,7 +101,8 @@ This section describes how to deploy a Piiano Vault Server on AWS EKS.
 3. Configure an IAM role to use in the following command. IAM role should have `kms:Decrypt` and `kms:Encrypt` permissions to the KMS key in the configuration. In addition, the IAM role should be configured to be assumed by the Service Account (see [AWS docs](https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html)). You can set the Service Account name by using the parameter `serviceAccount.name`.
 4. Run:
     ```console
-    helm upgrade --install \
+    helm upgrade --install pvault-server piiano/pvault-server \
+      --create-namespace --namespace pvault \
       --set pvault.devmode=true \
       --set-string pvault.db.user=${RDS_USER} \
       --set-string pvault.db.password=${RDS_PASS} \
@@ -112,9 +113,40 @@ This section describes how to deploy a Piiano Vault Server on AWS EKS.
       --set-string pvault.log.customerIdentifier=my-company-name \
       --set-string serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=arn:aws:iam::123456789012:role/pvault-server-role \
       --set-string serviceAccount.name=pvault-sa \
-      --set-string nodeSelector."node\.kubernetes\.io/instance-type"=${NODE_INSTANCE_TYPE} \
-      pvault-server piiano/pvault-server --create-namespace --namespace pvault
+      --set-string nodeSelector."node\.kubernetes\.io/instance-type"=${NODE_INSTANCE_TYPE}
     ```
+
+Continue with [post installation](#post-installation) checks.
+
+### Azure installation
+
+This section describes how to deploy a Piiano Vault Server on Azure AKS.
+
+1. Set the parameters (**NOTE:** if using [Vault Deployments - AKS Bicep Setup](https://github.com/piiano/vault-deployments/tree/main/azure-aks-setup-bicep), the values for those parameters are the outputs of the deployment):
+   * DB: `DB_USER`, `DB_PASS`, `DB_HOST` and `DB_NAME`.
+   * Key Vault: `KEYVAULT_URI`, `KEYVAULT_KEY_NAME`, `KEYVAULT_VERSION`.
+   * Managed Identity: `MANAGED_IDENTITY_CLIENT_ID`.
+2. Run:
+    ```console
+    helm upgrade --install pvault-server piiano/pvault-server \
+      --create-namespace --namespace pvault \
+      --set-string pvault.log.datadogEnable=none \
+      --set pvault.devmode=true \
+      --set-string pvault.db.user=${DB_USER} \
+      --set-string pvault.db.password=${DB_PASS} \
+      --set-string pvault.db.hostname=${DB_HOST} \
+      --set-string pvault.db.name=${DB_NAME} \
+      --set pvault.db.requireTLS=true \
+      --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
+      --set-string pvault.kms.uri=az-kms://${KEYVAULT_URI}/keys/${KEYVAULT_KEY_NAME}/${KEYVAULT_VERSION} \
+      --set-string pvault.log.customerIdentifier=my-company-name \
+      --set-string serviceAccount.annotations."azure\.workload\.identity/client-id"=${MANAGED_IDENTITY_CLIENT_ID} \
+      --set-string serviceAccount.name=pvault-sa \
+      --set-string podLabels."azure\.workload\.identity/use"=true \
+      --set-string pvault.extraEnvVars.PVAULT_DB_MIGRATION_ENABLE_CLEAN_DATABASE_VALIDATION=false
+    ```
+
+**Note:** Cosmos DB for PostgresSQL uses [Citus](https://learn.microsoft.com/en-us/azure/cosmos-db/postgresql/introduction) which comes with built-in tables. The Piiano Vault migration will fail for "clean database validation" because of these tables. Setting the environment variable `PVAULT_DB_MIGRATION_ENABLE_CLEAN_DATABASE_VALIDATION` value to `false` will skip the validation and allow the migration to complete. If you are using other PostgresSQL setup, you can skip this configuration.
 
 Continue with [post installation](#post-installation) checks.
 
