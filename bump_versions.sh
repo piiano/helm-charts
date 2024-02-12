@@ -26,6 +26,7 @@ sed -i "s|$LINE $OLD_VAULT_VERSION|$LINE $NEW_VAULT_VERSION|g" ${README}
 
 # replace image tag in readme
 sed -i "s|\`$OLD_VAULT_VERSION\`|\`$NEW_VAULT_VERSION\`|g" ${README}
+sed -i "s|piiano/pvault-cli:$OLD_VAULT_VERSION\"|piiano/pvault-cli:$NEW_VAULT_VERSION\"|g" ${README}
 
 # replace tag in vaules.yaml
 sed -i "s|tag: \"$OLD_VAULT_VERSION\"|tag: \"$NEW_VAULT_VERSION\"|g" ${VALUES}
