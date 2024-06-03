@@ -15,7 +15,7 @@ To see all the available configurations, please refer to [Piiano Vault documenta
 
 These are the earliest versions that have been tested. Earlier versions may also work.
 
-This package is compatible with Vault version 1.11.2
+This package is compatible with Vault version 1.11.3
 
 ## Installing the Chart
 
@@ -177,7 +177,7 @@ You can then use the [Piiano Vault CLI](https://piiano.com/docs/cli) to interact
 
 ```sh
 # For easier interaction with the containerized CLI, set an alias.
-alias pvault="docker run --rm -i -v $(pwd):/pwd -w /pwd piiano/pvault-cli:1.11.2"
+alias pvault="docker run --rm -i -v $(pwd):/pwd -w /pwd piiano/pvault-cli:1.11.3"
 
 pvault status
 ```
@@ -223,7 +223,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `replicaCount`                                  | Number of Piiano Vault Servers instances to run.                                     | `1`                    |
 | `image.repository`                              | Piiano Vault Server image repositoryl                                                | `piiano/pvault-server` |
 | `image.pullPolicy`                              | Piiano Vault Server image pull policy.                                               | `IfNotPresent`         |
-| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                      | `1.11.2`               |
+| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                      | `1.11.3`               |
 | `imagePullSecrets`                              | Specify image pull secrets.                                                          | `[]`                   |
 | `serviceAccount.create`                         | Whether a service account should be created.                                         | `true`                 |
 | `serviceAccount.annotations`                    | Annotations to add to the service account                                            | `{}`                   |
