@@ -60,6 +60,10 @@ podLabels: {}
 ##
 podAnnotations: {}
 
+## @param env Add environment variables to Piiano Vault Server pods.
+##
+env: []
+
 ## Pod Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 ## @param podSecurityContext [object] Pod Security Context configuration.

@@ -81,6 +81,10 @@ spec:
               value: /etc/pvault/certs/db-ca-bundle.pem
           {{- end }}
           {{- end }}
+          {{- range .Values.env }}
+            - name: {{ .name | quote }}
+              value: {{ .value | quote }}
+          {{- end }}
           envFrom:
           - configMapRef:
               name: {{ include "pvault-server.fullname" . }}-env-vars
