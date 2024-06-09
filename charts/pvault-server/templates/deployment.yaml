@@ -68,7 +68,7 @@ spec:
             failureThreshold: 120
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.pvault.log.datadogAPMEnable .Values.dbCARootCertificate }}
+          {{- if or .Values.pvault.log.datadogAPMEnable .Values.dbCARootCertificate .Values.pvault.directEnvVars  }}
           env:
           {{- if .Values.pvault.log.datadogAPMEnable }}
             - name: DD_AGENT_HOST
@@ -79,6 +79,10 @@ spec:
           {{- with .Values.dbCARootCertificate }}
             - name: PGSSLROOTCERT
               value: /etc/pvault/certs/db-ca-bundle.pem
+          {{- end }}
+          {{- range $key, $value := .Values.pvault.directEnvVars }}
+            - name: {{ $key }}
+              value: {{ $value }}
           {{- end }}
           {{- end }}
           envFrom:

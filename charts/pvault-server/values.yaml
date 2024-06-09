@@ -391,6 +391,10 @@ pvault:
   ##
   extraEnvVars: {}
 
+  ## @param pvault.directEnvVars Directly injected environment variables. WARNING: Directly setting environment variables through this parameter is not recommended. This should only be used if ConfigMaps cannot be used due to a technical reason. Usage of this parameter bypasses ConfigMaps and injects environment variables directly into the Deployment, which may not follow best practices.
+  ##
+  directEnvVars: {}
+
 ##################
 
 ## @section Environment parameters
