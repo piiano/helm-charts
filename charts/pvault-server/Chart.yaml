@@ -6,10 +6,11 @@ version: "0.7.4"
 appVersion: "1.12.1"
 dependencies:
   - name: postgresql
-    version: "12.x.x"
+    version: "15.x.x"
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 home: https://piiano.com/pii-data-privacy-vault/
-keywords: ["piiano", "vault", "pvault", "privacy", "tokenization", "encryption", "pci"]
+keywords:
+  ["piiano", "vault", "pvault", "privacy", "tokenization", "encryption", "pci"]
 sources:
   - https://github.com/piiano/helm-charts/blob/main/charts/pvault-server/Chart.yaml
