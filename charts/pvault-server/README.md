@@ -45,7 +45,7 @@ You can use the following Helm command to deploy Postgres to your cluster:
 ```console
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm upgrade --install db bitnami/postgresql --namespace postgres --create-namespace \
-    --set-string image.tag=14.5.0 \
+    --set-string image.tag=14.12.0 \
     --set-string auth.username=pvault \
     --set-string auth.password=pvault \
     --set-string auth.database=pvault \
@@ -317,14 +317,14 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Dependencies parameters
 
-| Name                                     | Description                                                                                                                                                     | Value    |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `postgresql.enabled`                     | Whether or not to deploy a Postgres instance to the cluster. This is for experimentation purposes only and NOT for production. See ref for more configurations. | `false`  |
-| `postgresql.image.tag`                   | Postgres image tag. Do not change.                                                                                                                              | `14.5.0` |
-| `postgresql.auth.database`               | Name of the database. It is unlikely that you will need to change this parameter.                                                                               | `pvault` |
-| `postgresql.auth.username`               | Postgres username. It is unlikely that you will need to change this parameter.                                                                                  | `pvault` |
-| `postgresql.auth.password`               | Postgres password. It is unlikely that you will need to change this parameter.                                                                                  | `pvault` |
-| `postgresql.primary.persistence.enabled` | Use ephemeral storage for Postgres. When `false`, a PVC is not created.                                                                                         | `false`  |
+| Name                                     | Description                                                                                                                                                     | Value     |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `postgresql.enabled`                     | Whether or not to deploy a Postgres instance to the cluster. This is for experimentation purposes only and NOT for production. See ref for more configurations. | `false`   |
+| `postgresql.image.tag`                   | Postgres image tag. Do not change.                                                                                                                              | `14.12.0` |
+| `postgresql.auth.database`               | Name of the database. It is unlikely that you will need to change this parameter.                                                                               | `pvault`  |
+| `postgresql.auth.username`               | Postgres username. It is unlikely that you will need to change this parameter.                                                                                  | `pvault`  |
+| `postgresql.auth.password`               | Postgres password. It is unlikely that you will need to change this parameter.                                                                                  | `pvault`  |
+| `postgresql.primary.persistence.enabled` | Use ephemeral storage for Postgres. When `false`, a PVC is not created.                                                                                         | `false`   |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
