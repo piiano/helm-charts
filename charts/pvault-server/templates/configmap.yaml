@@ -78,6 +78,7 @@ data:
     [log]
     level               = {{ .Values.pvault.log.level | quote }}
     datadog_apm_enable  = {{ .Values.pvault.log.datadogAPMEnable }}
+    customer_region     = {{ .Values.pvault.log.customerRegion | quote }}
     customer_env        = {{ .Values.pvault.log.customerEnv | quote }}
     customer_identifier = {{ required "A valid .Values.pvault.log.customerIdentifier is required." .Values.pvault.log.customerIdentifier | quote }}
   {{- with .Values.pvault.startupIAMFile }}

@@ -347,6 +347,9 @@ pvault:
     ## @param pvault.log.customerIdentifier Identifies the customer in all the observability platforms.
     ##
     customerIdentifier: ""
+    ## @param pvault.log.customerRegion Identifies the region in all the observability platforms. Recommended values are `us`, `eu`, `us-east-1`, etc.
+    ##
+    customerRegion: ""
     ## @param pvault.log.datadogEnable Enable Datadog logs and metrics.
     ##
     datadogEnable: "logs,stats,config"
