@@ -353,7 +353,7 @@ pvault:
     ## @param pvault.log.datadogEnable Enable Datadog logs and metrics.
     ##
     datadogEnable: "logs,stats,config"
-    ## @param pvault.log.datadogAPMEnable Enable Datadog application performance monitoring (APM).
+    ## @skip pvault.log.datadogAPMEnable (INTERNAL) Enable Datadog application performance monitoring (APM).
     ##
     datadogAPMEnable: false
   sentry:
