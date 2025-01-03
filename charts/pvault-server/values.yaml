@@ -8,12 +8,38 @@ nameOverride: ""
 ##
 fullnameOverride: ""
 
-## @section Controller parameters
+## @param commonLabels Add labels to all Piiano Vault Server resources.
 ##
+commonLabels: {}
+## @param commonAnnotations Add annotations to all Piiano Vault Server resources.
+##
+commonAnnotations: {}
+
+## @section Deployment parameters
+##
+
+## @param labels Add labels to Piiano Vault Server deployment.
+##
+labels: {}
+## @param annotations Add annotations to Piiano Vault Server deployment.
+##
+annotations: {}
 
 ## @param replicaCount Number of Piiano Vault Servers instances to run.
 ##
 replicaCount: 1
+
+## @param updateStrategy.type Set up update strategy for Piiano Vault Server deployment.
+## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+## Example:
+## updateStrategy:
+##  type: RollingUpdate
+##  rollingUpdate:
+##    maxSurge: 25%
+##    maxUnavailable: 25%
+##
+updateStrategy:
+  type: RollingUpdate
 
 ## Piiano Vault Server image version.
 ## ref: https://hub.docker.com/r/piiano/pvault-server/tags
@@ -26,11 +52,15 @@ image:
   pullPolicy: IfNotPresent
   ## @param image.tag Piiano Vault Server image tag (immutable tags are recommended).
   #
-  tag: "1.14.2"
+  tag: 1.14.2
 
 ## @param imagePullSecrets Specify image pull secrets.
 ##
 imagePullSecrets: []
+
+## @param automountServiceAccountToken Mount Service Account token in pod
+##
+automountServiceAccountToken: true
 
 ## Service account for Piiano Vault Server to use.
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
@@ -49,8 +79,8 @@ serviceAccount:
 
 ## @param dnsPolicy Default dnsPolicy setting
 ## If you enable hostNetwork then you may need to set your dnsPolicy to something other
-## than "ClusterFirst" depending on your requirements.
-dnsPolicy: "ClusterFirst"
+## than `ClusterFirst` depending on your requirements.
+dnsPolicy: ClusterFirst
 
 ## @param podLabels Add labels to Piiano Vault Server pods.
 ##
@@ -63,31 +93,113 @@ podAnnotations: {}
 ## Pod Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 ## @param podSecurityContext [object] Pod Security Context configuration.
-podSecurityContext: {}
+podSecurityContext:
+  enabled: true
+  fsGroup: 1000
+  fsGroupChangePolicy: OnRootMismatch
+  supplementalGroups: []
+  sysctls: []
 
 ## Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 ## @param securityContext [object] Security Context configuration.
 securityContext:
+  enabled: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+  privileged: false
   allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
   capabilities:
     drop:
       - ALL
-  privileged: false
-  readOnlyRootFilesystem: true
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
+  seLinuxOptions: {}
+  seccompProfile:
+    type: RuntimeDefault
+
+## Liveness Probe
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+## @param livenessProbe [object] Liveness Probe configuration.
+livenessProbe:
+  enabled: true
+  path: /api/pvlt/1.0/data/info/health
+  scheme: HTTP
+  initialDelaySeconds: 0
+  periodSeconds: 20
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+## Readiness Probe
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+## @param readinessProbe [object] Readiness Probe configuration.
+readinessProbe:
+  enabled: true
+  path: /api/pvlt/1.0/data/info/health
+  scheme: HTTP
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 2
+  successThreshold: 1
+  failureThreshold: 3
+
+## Startup Probe
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+## @param startupProbe [object] Startup Probe configuration.
+startupProbe:
+  enabled: true
+  path: /api/pvlt/1.0/data/info/health
+  scheme: HTTP
+  initialDelaySeconds: 2
+  periodSeconds: 2
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 60
+
+## @param terminationGracePeriodSeconds Specify Pod termination grace period.
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/
+terminationGracePeriodSeconds: 30
 
 ## Piiano Vault Server service configuration.
 ##
 service:
+  ## @param service.labels Add labels to Piiano Vault Server service.
+  ##
+  labels: {}
+  ## @param service.annotations Add annotations to Piiano Vault Server service.
+  ##
+  annotations: {}
   ## @param service.type Kubernetes Service type. For example: ClusterIP / NodePort.
   ##
   type: ClusterIP
   ## @param service.port Piiano Vault Server service port.
   ##
   port: 8123
+  ## @param service.nodePort Piiano Vault Server service node port.
+  ##
+  nodePort:
+  ## @param service.externalTrafficPolicy Piiano Vault Server service external traffic policy.
+  ##
+  externalTrafficPolicy:
+  ## @param service.internalTrafficPolicy Piiano Vault Server service internal traffic policy.
+  ##
+  internalTrafficPolicy:
+  ## @param service.loadBalancerClass Piiano Vault Server service loadbalancer class.
+  ##
+  loadBalancerClass:
+  ## @param service.clusterIP Piiano Vault Server service cluster IP.
+  ##
+  clusterIP:
+  ## @param service.sessionAffinity Piiano Vault Server service session affinity.
+  ##
+  sessionAffinity:
+  ## @param service.sessionAffinityConfig Piiano Vault Server service session affinity config.
+  ##
+  sessionAffinityConfig:
+  ## @param service.trafficDistribution Piiano Vault Server service traffic distribution.
+  ##
+  trafficDistribution:
 
 ## Configure the ingress resource that allows you to access Piiano Vault Server.
 ## ref: https://kubernetes.io/docs/user-guide/ingress/
@@ -101,20 +213,20 @@ ingress:
   ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
   ##
   className: ""
-  ## @param ingress.annotations Additional custom annotations for the ingress record.
+  ## @param ingress.annotations Additional custom annotations for the ingress.
   ## For a full list of possible ingress annotations, please see
   ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
   ##
   annotations: {}
-  ## @param ingress.hosts An array with additional hostname(s) to be covered with the ingress record.
+  ## @param ingress.hosts An array with hostname(s) to be covered with the ingress.
   ## e.g:
   ## hosts:
   ## - host: schema-registry.local
   ##   paths:
   ##     - path: /
   ##       pathType: Prefix
-  hosts:
-  ## @param ingress.tls TLS configuration for additional hostname(s) to be covered with this ingress record.
+  hosts: []
+  ## @param ingress.tls TLS configuration for hostname(s) to be covered with this ingress.
   ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
   ## e.g:
   ## tls:
@@ -123,7 +235,7 @@ ingress:
   ##     - chart-example.local
   tls: []
 
-## Controller container resource requests and limits.
+## Deployment container resource requests and limits.
 ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
 ## We usually recommend not to specify default resources and to leave this as a conscious
 ## choice for the user. This also increases chances charts run on environments with little
@@ -149,6 +261,7 @@ resources:
 ## Piiano Vault Server Autoscaling parameters.
 ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
 ## @param autoscaling.enabled Enable autoscaling for replicas.
+## @param autoscaling.annotations HPA annotations.
 ## @param autoscaling.minReplicas Minimum number of replicas.
 ## @param autoscaling.maxReplicas Maximum number of replicas.
 ## @param autoscaling.targetCPUUtilizationPercentage [nullable] Target CPU utilization percentage.
@@ -156,6 +269,7 @@ resources:
 ##
 autoscaling:
   enabled: false
+  annotations: {}
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
@@ -194,7 +308,7 @@ pvault:
   db:
     ## @param pvault.db.user Username for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.username`.
     ##
-    user: "pvault"
+    user: pvault
     ## @param pvault.db.password Password for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.password`.
     ##
     password: ""
@@ -209,7 +323,7 @@ pvault:
     existingPasswordSecretKey: ""
     ## @param pvault.db.name Name of the database to connect to. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.database`.
     ##
-    name: "pvault"
+    name: pvault
     ## @param pvault.db.hostname Hostname of the running database. If `postgresql.enabled` is `true` then this value is ignored.
     ##
     hostname: ""
@@ -343,7 +457,7 @@ pvault:
     level: debug
     ## @param pvault.log.customerEnv Identifies the environment in all the observability platforms. Recommended values are `prod`, `staging`, and `dev`.
     ##
-    customerEnv: "dev"
+    customerEnv: dev
     ## @param pvault.log.customerIdentifier Identifies the customer in all the observability platforms.
     ##
     customerIdentifier: ""
@@ -352,7 +466,7 @@ pvault:
     customerRegion: ""
     ## @param pvault.log.datadogEnable Enable Datadog logs and metrics.
     ##
-    datadogEnable: "logs,stats,config"
+    datadogEnable: logs,stats,config
     ## @skip pvault.log.datadogAPMEnable (INTERNAL) Enable Datadog application performance monitoring (APM).
     ##
     datadogAPMEnable: false
@@ -418,20 +532,20 @@ postgresql:
   ## @param postgresql.enabled Whether or not to deploy a Postgres instance to the cluster. This is for experimentation purposes only and NOT for production. See ref for more configurations.
   ##
   enabled: false
-  ## @param postgresql.image.tag Postgres image tag. Do not change.
+  ## @param postgresql.image.tag Postgres image tag.
   ##
   image:
-    tag: "14.12.0"
+    tag: 14.12.0
   auth:
     ## @param postgresql.auth.database Name of the database. It is unlikely that you will need to change this parameter.
     ##
-    database: "pvault"
+    database: pvault
     ## @param postgresql.auth.username Postgres username. It is unlikely that you will need to change this parameter.
     ##
-    username: "pvault"
+    username: pvault
     ## @param postgresql.auth.password Postgres password. It is unlikely that you will need to change this parameter.
     ##
-    password: "pvault"
+    password: pvault
   ## @param postgresql.primary.persistence.enabled Use ephemeral storage for Postgres. When `false`, a PVC is not created.
   ##
   primary:

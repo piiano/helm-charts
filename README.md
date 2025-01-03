@@ -13,7 +13,7 @@ This repository contains Helm Charts for different Piiano products.
 Piiano Helm repository can be added using the `helm repo add` command, like
 in the following example:
 
-```console
-$ helm repo add piiano https://piiano.github.io/helm-charts
+```sh
+helm repo add piiano https://piiano.github.io/helm-charts
 "piiano" has been added to your repositories
 ```

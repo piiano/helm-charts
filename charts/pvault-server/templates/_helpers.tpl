@@ -1,8 +1,10 @@
+{{/* vim: set filetype=mustache: */}}
+
 {{/*
 Expand the name of the chart.
 */}}
 {{- define "pvault-server.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end }}
 
 {{/*
@@ -11,44 +13,73 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "pvault-server.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- if .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Allow the release namespace to be overridden for multi-namespace deployments in combined charts.
+*/}}
+{{- define "pvault-server.namespace" -}}
+{{- default .Release.Namespace .Values.namespaceOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 
 {{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "pvault-server.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end }}
 
 {{/*
-Common labels
+Source: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_names.tpl
+Kubernetes standard labels
+{{ include "pvault-server.labels.standard" (dict "customLabels" .Values.commonLabels "context" $) -}}
 */}}
-{{- define "pvault-server.labels" -}}
+{{- define "pvault-server.labels.standard" -}}
+{{- if and (hasKey . "customLabels") (hasKey . "context") -}}
+{{- $default := dict "app.kubernetes.io/name" (include "pvault-server.name" .context) "helm.sh/chart" (include "pvault-server.chart" .context) "app.kubernetes.io/instance" .context.Release.Name "app.kubernetes.io/managed-by" .context.Release.Service -}}
+{{- with .context.Chart.AppVersion -}}
+{{- $_ := set $default "app.kubernetes.io/version" . -}}
+{{- end -}}
+{{ template "pvault-server.tplvalues.merge" (dict "values" (list .customLabels $default) "context" .context) }}
+{{- else -}}
+app.kubernetes.io/name: {{ include "pvault-server.name" . }}
 helm.sh/chart: {{ include "pvault-server.chart" . }}
-{{ include "pvault-server.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
+{{- with .Chart.AppVersion }}
+app.kubernetes.io/version: {{ . | quote }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
-Selector labels
+Source: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_names.tpl
+Labels used on immutable fields such as deploy.spec.selector.matchLabels or svc.spec.selector
+{{ include "pvault-server.labels.matchLabels" (dict "customLabels" .Values.podLabels "context" $) -}}
+
+We don't want to loop over custom labels appending them to the selector
+since it's very likely that it will break deployments, services, etc.
+However, it's important to overwrite the standard labels if the user
+overwrote them on metadata.labels fields.
 */}}
-{{- define "pvault-server.selectorLabels" -}}
+{{- define "pvault-server.labels.matchLabels" -}}
+{{- if and (hasKey . "customLabels") (hasKey . "context") -}}
+{{ merge (pick (include "pvault-server.tplvalues.render" (dict "value" .customLabels "context" .context) | fromYaml) "app.kubernetes.io/name" "app.kubernetes.io/instance") (dict "app.kubernetes.io/name" (include "pvault-server.name" .context) "app.kubernetes.io/instance" .context.Release.Name ) | toYaml }}
+{{- else -}}
 app.kubernetes.io/name: {{ include "pvault-server.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Create the name of the service account to use
@@ -86,3 +117,39 @@ Get the a volume template for a secret.
     - key: {{ include "pvault-server.secrets.key" . }}
       path: content
 {{- end }}
+
+{{/*
+Source: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_tplvalues.tpl
+Renders a value that contains template perhaps with scope if the scope is present.
+Usage:
+{{ include "pvault-server.tplvalues.render" ( dict "value" .Values.path.to.the.Value "context" $ ) }}
+{{ include "pvault-server.tplvalues.render" ( dict "value" .Values.path.to.the.Value "context" $ "scope" $app ) }}
+Borrowed from https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_tplvalues.tpl
+*/}}
+{{- define "pvault-server.tplvalues.render" -}}
+{{- $value := typeIs "string" .value | ternary .value (.value | toYaml) }}
+{{- if contains "{{" (toJson .value) }}
+  {{- if .scope }}
+      {{- tpl (cat "{{- with $.RelativeScope -}}" $value "{{- end }}") (merge (dict "RelativeScope" .scope) .context) }}
+  {{- else }}
+    {{- tpl $value .context }}
+  {{- end }}
+{{- else }}
+    {{- $value }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Source: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_tplvalues.tpl
+Merge a list of values that contains template after rendering them.
+Merge precedence is consistent with http://masterminds.github.io/sprig/dicts.html#merge-mustmerge
+Usage:
+{{ include "pvault-server.tplvalues.merge" ( dict "values" (list .Values.path.to.the.Value1 .Values.path.to.the.Value2) "context" $ ) }}
+*/}}
+{{- define "pvault-server.tplvalues.merge" -}}
+{{- $dst := dict -}}
+{{- range .values -}}
+{{- $dst = include "pvault-server.tplvalues.render" (dict "value" . "context" $.context "scope" $.scope) | fromYaml | merge $dst -}}
+{{- end -}}
+{{ $dst | toYaml }}
+{{- end -}}
