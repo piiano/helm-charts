@@ -1,0 +1,9 @@
+[tools]
+helm = "3.16.4"
+node = "20"
+
+[[env]]
+_.file = '.env'
+
+[[env]]
+_.file = '.env.local'

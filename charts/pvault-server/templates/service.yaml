@@ -1,18 +1,45 @@
+{{- $serviceLabels := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.service.labels .Values.commonLabels ) "context" . ) }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "pvault-server.fullname" . }}
-  labels:
-    {{- include "pvault-server.labels" . | nindent 4 }}
+  namespace: {{ include "pvault-server.namespace" . | quote }}
+  labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" $serviceLabels "context" $ ) | nindent 4 }}
+  {{- if or .Values.service.annotations .Values.commonAnnotations }}
+  {{- $serviceAnnotations := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.service.annotations .Values.commonAnnotations ) "context" . ) }}
+  annotations: {{- include "pvault-server.tplvalues.render" ( dict "value" $serviceAnnotations "context" $) | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
+  {{- if or (eq .Values.service.type "LoadBalancer") (eq .Values.service.type "NodePort") }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if (semverCompare ">=1.22-0" (include "pvault-server.capabilities.kubeVersion" .)) }}
+  internalTrafficPolicy: {{ .Values.service.internalTrafficPolicy }}
+  {{- end }}
+  {{- if and (eq .Values.service.type "LoadBalancer")  .Values.service.loadBalancerClass }}
+  loadBalancerClass: {{ .Values.service.loadBalancerClass }}
+  {{- end }}
+  {{- if and .Values.service.clusterIP (eq .Values.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.service.clusterIP }}
+  {{- end }}
+  {{- if .Values.service.sessionAffinity }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- end }}
+  {{- if .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.service.sessionAffinityConfig "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if .Values.service.trafficDistribution }}
+  trafficDistribution: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.service.trafficDistribution "context" $) | nindent 4 }}
+  {{- end }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: 8123
-      {{- if eq .Values.service.type "NodePort" }}
-      nodePort: 30000
-      {{- end }}
+    - name: pvault-port
+      port: {{ .Values.service.port }}
       protocol: TCP
-      name: pvault-port
-  selector:
-    {{- include "pvault-server.selectorLabels" . | nindent 4 }}
+      targetPort: pvault-port
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) .Values.service.nodePort}}
+      nodePort: {{ .Values.service.nodePort}}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+  selector: {{- include "pvault-server.labels.matchLabels" ( dict "customLabels" ( include "pvault-server.pod.labels" $ ) "context" $ ) | nindent 4 }}

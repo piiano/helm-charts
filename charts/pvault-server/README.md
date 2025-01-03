@@ -15,12 +15,13 @@ To see all the available configurations, please refer to [Piiano Vault documenta
 
 These are the earliest versions that have been tested. Earlier versions may also work.
 
-This package is compatible with Vault version 1.14.2
+This package is compatible with Vault version `1.14.2`
 
 ## Installing the Chart
 
 Add the repository:
-```console
+
+```sh
 helm repo add piiano https://piiano.github.io/helm-charts
 ```
 
@@ -28,21 +29,39 @@ Select your use case:
 
 1. [**Simplest local installation**](#simplest-local-installation) - Try out the Vault on a local Kubernetes cluster with a naive default configuration. This will also install the dependent Postgres server. This mode is only meant for testing purposes.
 2. [**Controlled installation**](#controlled-installation) - Try out the Vault on a Kubernetes cluster and connect it to your database or optionally install a Postgres first.
-3. [**AWS installation**](#aws-installation) - Try out the Vault on AWS EKS, connecting to your RDS Postgres database or optionally install a Postgres first. 
+3. [**AWS installation**](#aws-installation) - Try out the Vault on AWS EKS, connecting to your RDS Postgres database or optionally install a Postgres first.
 4. [**Azure installation**](#azure-installation) - Try out the Vault on Azure AKS, connecting your Cosmos DB for PostgreSQL or optionally install a Postgres first.
 5. [**Fully automated installation**](#fully-automated-installation) - Use this option when you have fully configured the values.yaml to fit your needs.
 
+Specify each Helm parameter/value using the `--set key=value[,key=value]` argument to `helm install`. For example,
+
+```sh
+helm install pvault-server \
+  --set db.requireTLS=true piiano/pvault-server
+```
+
+The above command sets the Piiano Vault Server to require TLS connection to the database.
+
+> NOTE: Once this chart is deployed, some of the configuration cannot be changed without restarting the server. Please refer to the documentation page for more information.
+
+Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example:
+
+```sh
+helm install pvault-server -f values.yaml piiano/pvault-server
+```
+
+> **Tip**: You can use the default [values.yaml](values.yaml)
 
 ### Installing Postgres
 
 Before installing Piiano Vault Server, you will need a running instance of Postgres 14.
-It is recommended to use a managed cloud provider Postgres installation such as RDS in AWS or CloudSQL in GCP. The simplest local installation mode will install Postgres for you (skip this step). 
+It is recommended to use a managed cloud provider Postgres installation such as RDS in AWS or CloudSQL in GCP. The simplest local installation mode will install Postgres for you (skip this step).
 
 :warning: This installation is provided for testing purposes and is not meant for production. It is not backed up, not encrypted at REST, etc.
 
 You can use the following Helm command to deploy Postgres to your cluster:
 
-```console
+```sh
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm upgrade --install db bitnami/postgresql --namespace postgres --create-namespace \
     --set-string image.tag=14.12.0 \
@@ -60,7 +79,7 @@ Note that the command line deploys the Postgres instance with ephemeral storage.
 
 Deploy Piiano Vault Server on your local Kubernetes cluster while also installing Postgres as part of this process:
 
-```console
+```sh
 helm upgrade --install pvault-server piiano/pvault-server --namespace pvault --create-namespace \
     --set pvault.devmode=true \
     --set-string pvault.app.license=${PVAULT_SERVICE_LICENSE} \
@@ -78,7 +97,8 @@ Use the following command line to deploy Piiano Vault Server on a typical Kubern
 
 1. Set the parameters: `DB_USER`, `DB_PASS`, `DB_HOST` and `DB_NAME`.
 2. Run:
-  ```console
+
+  ```sh
     helm upgrade --install pvault-server piiano/pvault-server \ 
       --create-namespace --namespace pvault \
       --set pvault.devmode=true \
@@ -92,7 +112,6 @@ Use the following command line to deploy Piiano Vault Server on a typical Kubern
 
 Continue with [post installation](#post-installation) checks.
 
-
 ### AWS installation
 
 This section describes how to deploy a Piiano Vault Server on AWS EKS.
@@ -101,7 +120,8 @@ This section describes how to deploy a Piiano Vault Server on AWS EKS.
 2. Set the parameter: `NODE_INSTANCE_TYPE` such as `m6g.large`. For testing purposes you can use an instance as small as a single core and 1GB of RAM.
 3. Configure an IAM role to use in the following command. IAM role should have `kms:Decrypt` and `kms:Encrypt` permissions to the KMS key in the configuration. In addition, the IAM role should be configured to be assumed by the Service Account (see [AWS docs](https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html)). You can set the Service Account name by using the parameter `serviceAccount.name`.
 4. Run:
-    ```console
+
+    ```sh
     helm upgrade --install pvault-server piiano/pvault-server \
       --create-namespace --namespace pvault \
       --set pvault.devmode=true \
@@ -128,7 +148,8 @@ This section describes how to deploy a Piiano Vault Server on Azure AKS.
    * Key Vault: `KEYVAULT_URI`, `KEYVAULT_KEY_NAME`, `KEYVAULT_VERSION`.
    * Managed Identity: `MANAGED_IDENTITY_CLIENT_ID`.
 2. Run:
-    ```console
+
+    ```sh
     helm upgrade --install pvault-server piiano/pvault-server \
       --create-namespace --namespace pvault \
       --set-string pvault.log.datadogEnable=none \
@@ -156,20 +177,19 @@ Continue with [post installation](#post-installation) checks.
 The following will take all the installation parameters from the [values.yaml](values.yaml) file.
 Use this after you have fully configured the Vault to your environment:
 
-```console
+```sh
 helm install piiano/pvault-server
 ```
 
 Continue with [post installation](#post-installation) checks.
 
-
 ## Post installation
 
-Piiano Vault Server is now running! 
+Piiano Vault Server is now running!
 
 Once the installation is complete, use the following command to expose the port for Piiano Vault Server:
 
-```console
+```sh
 kubectl port-forward --namespace pvault svc/pvault-server 8123:8123
 ```
 
@@ -184,7 +204,7 @@ pvault status
 
 The expected output should be:
 
-```console
+```sh
 +------+---------+
 | data | control |
 +------+---------+
@@ -198,9 +218,10 @@ See the [Getting Started](https://piiano.com/docs/guides/get-started/) documenta
 
 To uninstall/delete the `pvault-server` release:
 
+```sh
+helm delete pvault-server --namespace pvault
 ```
-$ helm delete pvault-server --namespace pvault
-```
+
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
 ## Disclaimers
@@ -211,47 +232,68 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Common parameters
 
-| Name               | Description                                              | Value |
-| ------------------ | -------------------------------------------------------- | ----- |
-| `nameOverride`     | String to override the default chart name.               | `""`  |
-| `fullnameOverride` | String to override the default fully qualified app name. | `""`  |
+| Name                | Description                                              | Value |
+| ------------------- | -------------------------------------------------------- | ----- |
+| `nameOverride`      | String to override the default chart name.               | `""`  |
+| `fullnameOverride`  | String to override the default fully qualified app name. | `""`  |
+| `commonLabels`      | Add labels to all Piiano Vault Server resources.         | `{}`  |
+| `commonAnnotations` | Add annotations to all Piiano Vault Server resources.    | `{}`  |
 
-### Controller parameters
+### Deployment parameters
 
-| Name                                            | Description                                                                          | Value                  |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------- |
-| `replicaCount`                                  | Number of Piiano Vault Servers instances to run.                                     | `1`                    |
-| `image.repository`                              | Piiano Vault Server image repositoryl                                                | `piiano/pvault-server` |
-| `image.pullPolicy`                              | Piiano Vault Server image pull policy.                                               | `IfNotPresent`         |
-| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                      | `1.14.2`               |
-| `imagePullSecrets`                              | Specify image pull secrets.                                                          | `[]`                   |
-| `serviceAccount.create`                         | Whether a service account should be created.                                         | `true`                 |
-| `serviceAccount.annotations`                    | Annotations to add to the service account                                            | `{}`                   |
-| `serviceAccount.name`                           | The name of the service account to use.                                              | `""`                   |
-| `dnsPolicy`                                     | Default dnsPolicy setting                                                            | `ClusterFirst`         |
-| `podLabels`                                     | Add labels to Piiano Vault Server pods.                                              | `{}`                   |
-| `podAnnotations`                                | Add annotations to Piiano Vault Server pods.                                         | `{}`                   |
-| `podSecurityContext`                            | Pod Security Context configuration.                                                  | `{}`                   |
-| `securityContext`                               | Security Context configuration.                                                      | `{}`                   |
-| `service.type`                                  | Kubernetes Service type. For example: ClusterIP / NodePort.                          | `ClusterIP`            |
-| `service.port`                                  | Piiano Vault Server service port.                                                    | `8123`                 |
-| `ingress.enabled`                               | Enable ingress generation.                                                           | `false`                |
-| `ingress.className`                             | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)        | `""`                   |
-| `ingress.annotations`                           | Additional custom annotations for the ingress record.                                | `{}`                   |
-| `ingress.hosts`                                 | An array with additional hostname(s) to be covered with the ingress record.          | `nil`                  |
-| `ingress.tls`                                   | TLS configuration for additional hostname(s) to be covered with this ingress record. | `[]`                   |
-| `resources.limits`                              | The resources limits for the container.                                              | `{}`                   |
-| `resources.requests`                            | The requested resources for the container.                                           | `{}`                   |
-| `autoscaling.enabled`                           | Enable autoscaling for replicas.                                                     | `false`                |
-| `autoscaling.minReplicas`                       | Minimum number of replicas.                                                          | `1`                    |
-| `autoscaling.maxReplicas`                       | Maximum number of replicas.                                                          | `100`                  |
-| `autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage.                                                   | `80`                   |
-| `autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage.                                                | `undefined`            |
-| `nodeSelector`                                  | Node labels for pod assignment.                                                      | `{}`                   |
-| `tolerations`                                   | Tolerations for pod assignment.                                                      | `[]`                   |
-| `affinity`                                      | Affinity for pod assignment.                                                         | `{}`                   |
-| `additionalSecretsAnnotations`                  | Add annotations to the Kubernetes secret.                                            | `{}`                   |
-| `additionalConfigMapAnnotations`                | Add annotations to the ConfigMaps.                                                   | `{}`                   |
+| Name                                            | Description                                                                   | Value                  |
+| ----------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------- |
+| `labels`                                        | Add labels to Piiano Vault Server deployment.                                 | `{}`                   |
+| `annotations`                                   | Add annotations to Piiano Vault Server deployment.                            | `{}`                   |
+| `replicaCount`                                  | Number of Piiano Vault Servers instances to run.                              | `1`                    |
+| `updateStrategy.type`                           | Set up update strategy for Piiano Vault Server deployment.                    | `RollingUpdate`        |
+| `image.repository`                              | Piiano Vault Server image repositoryl                                         | `piiano/pvault-server` |
+| `image.pullPolicy`                              | Piiano Vault Server image pull policy.                                        | `IfNotPresent`         |
+| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).               | `1.14.2`               |
+| `imagePullSecrets`                              | Specify image pull secrets.                                                   | `[]`                   |
+| `automountServiceAccountToken`                  | Mount Service Account token in pod                                            | `true`                 |
+| `serviceAccount.create`                         | Whether a service account should be created.                                  | `true`                 |
+| `serviceAccount.annotations`                    | Annotations to add to the service account                                     | `{}`                   |
+| `serviceAccount.name`                           | The name of the service account to use.                                       | `""`                   |
+| `dnsPolicy`                                     | Default dnsPolicy setting                                                     | `ClusterFirst`         |
+| `podLabels`                                     | Add labels to Piiano Vault Server pods.                                       | `{}`                   |
+| `podAnnotations`                                | Add annotations to Piiano Vault Server pods.                                  | `{}`                   |
+| `podSecurityContext`                            | Pod Security Context configuration.                                           | `{}`                   |
+| `securityContext`                               | Security Context configuration.                                               | `{}`                   |
+| `livenessProbe`                                 | Liveness Probe configuration.                                                 | `{}`                   |
+| `readinessProbe`                                | Readiness Probe configuration.                                                | `{}`                   |
+| `startupProbe`                                  | Startup Probe configuration.                                                  | `{}`                   |
+| `terminationGracePeriodSeconds`                 | Specify Pod termination grace period.                                         | `30`                   |
+| `service.labels`                                | Add labels to Piiano Vault Server service.                                    | `{}`                   |
+| `service.annotations`                           | Add annotations to Piiano Vault Server service.                               | `{}`                   |
+| `service.type`                                  | Kubernetes Service type. For example: ClusterIP / NodePort.                   | `ClusterIP`            |
+| `service.port`                                  | Piiano Vault Server service port.                                             | `8123`                 |
+| `service.nodePort`                              | Piiano Vault Server service node port.                                        | `nil`                  |
+| `service.externalTrafficPolicy`                 | Piiano Vault Server service external traffic policy.                          | `nil`                  |
+| `service.internalTrafficPolicy`                 | Piiano Vault Server service internal traffic policy.                          | `nil`                  |
+| `service.loadBalancerClass`                     | Piiano Vault Server service loadbalancer class.                               | `nil`                  |
+| `service.clusterIP`                             | Piiano Vault Server service cluster IP.                                       | `nil`                  |
+| `service.sessionAffinity`                       | Piiano Vault Server service session affinity.                                 | `nil`                  |
+| `service.sessionAffinityConfig`                 | Piiano Vault Server service session affinity config.                          | `nil`                  |
+| `service.trafficDistribution`                   | Piiano Vault Server service traffic distribution.                             | `nil`                  |
+| `ingress.enabled`                               | Enable ingress generation.                                                    | `false`                |
+| `ingress.className`                             | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) | `""`                   |
+| `ingress.annotations`                           | Additional custom annotations for the ingress.                                | `{}`                   |
+| `ingress.hosts`                                 | An array with hostname(s) to be covered with the ingress.                     | `[]`                   |
+| `ingress.tls`                                   | TLS configuration for hostname(s) to be covered with this ingress.            | `[]`                   |
+| `resources.limits`                              | The resources limits for the container.                                       | `{}`                   |
+| `resources.requests`                            | The requested resources for the container.                                    | `{}`                   |
+| `autoscaling.enabled`                           | Enable autoscaling for replicas.                                              | `false`                |
+| `autoscaling.annotations`                       | HPA annotations.                                                              | `{}`                   |
+| `autoscaling.minReplicas`                       | Minimum number of replicas.                                                   | `1`                    |
+| `autoscaling.maxReplicas`                       | Maximum number of replicas.                                                   | `100`                  |
+| `autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage.                                            | `80`                   |
+| `autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage.                                         | `undefined`            |
+| `nodeSelector`                                  | Node labels for pod assignment.                                               | `{}`                   |
+| `tolerations`                                   | Tolerations for pod assignment.                                               | `[]`                   |
+| `affinity`                                      | Affinity for pod assignment.                                                  | `{}`                   |
+| `additionalSecretsAnnotations`                  | Add annotations to the Kubernetes secret.                                     | `{}`                   |
+| `additionalConfigMapAnnotations`                | Add annotations to the ConfigMaps.                                            | `{}`                   |
 
 ### Piiano Vault parameters
 
@@ -320,35 +362,17 @@ The command removes all the Kubernetes components associated with the chart and 
 | Name                                     | Description                                                                                                                                                     | Value     |
 | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | `postgresql.enabled`                     | Whether or not to deploy a Postgres instance to the cluster. This is for experimentation purposes only and NOT for production. See ref for more configurations. | `false`   |
-| `postgresql.image.tag`                   | Postgres image tag. Do not change.                                                                                                                              | `14.12.0` |
+| `postgresql.image.tag`                   | Postgres image tag.                                                                                                                                             | `14.12.0` |
 | `postgresql.auth.database`               | Name of the database. It is unlikely that you will need to change this parameter.                                                                               | `pvault`  |
 | `postgresql.auth.username`               | Postgres username. It is unlikely that you will need to change this parameter.                                                                                  | `pvault`  |
 | `postgresql.auth.password`               | Postgres password. It is unlikely that you will need to change this parameter.                                                                                  | `pvault`  |
 | `postgresql.primary.persistence.enabled` | Use ephemeral storage for Postgres. When `false`, a PVC is not created.                                                                                         | `false`   |
 
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
+## Adding extra environment variables
 
-```console
-$ helm install pvault-server \
-  --set db.requireTLS=true piiano/pvault-server
-```
-
-The above command sets the Piiano Vault Server to require TLS connection to the database.
-
-> NOTE: Once this chart is deployed, some of the configuration cannot be changed without restarting the server. Please refer to the documentation page for more information.
-
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
-
-```console
-$ helm install pvault-server -f values.yaml piiano/pvault-server
-```
-
-> **Tip**: You can use the default [values.yaml](values.yaml)
-
-### Adding extra environment variables
 Add extra [environment variables](https://piiano.com/docs/guides/configure/environment-variables) using the extraEnvVars property:
 
-```console
+```sh
 extraEnvVars:
   - name: PVAULT_DB_MAX_OPEN_CONNS
     value: 200

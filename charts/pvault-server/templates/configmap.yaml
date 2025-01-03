@@ -1,28 +1,25 @@
----
-{{  $dbHost := "" }}
-{{  $dbName := "" }}
-{{  $dbUser := "" }}
-
+{{- $dbHost := "" }}
+{{- $dbName := "" }}
+{{- $dbUser := "" }}
 # If dev psql is enabled, override Vault configurations. Otherwise, enforce them.
 {{- if .Values.postgresql.enabled }}
-{{ $dbHost = printf "%s-postgresql" .Chart.Name | quote }}
-{{ $dbName = default "pvault" .Values.postgresql.auth.database | quote }}
-{{ $dbUser = default "pvault" .Values.postgresql.auth.username | quote }}
+{{- $dbHost = printf "%s-postgresql" .Chart.Name | quote }}
+{{- $dbName = default "pvault" .Values.postgresql.auth.database | quote }}
+{{- $dbUser = default "pvault" .Values.postgresql.auth.username | quote }}
 {{- else }}
-{{ $dbHost = required "A valid .Values.pvault.db.hostname entry required!" .Values.pvault.db.hostname | quote }}
-{{ $dbName = required "A valid .Values.pvault.db.name entry required!" .Values.pvault.db.name | quote }}
-{{ $dbUser = required "A valid .Values.pvault.db.user entry required!" .Values.pvault.db.user | quote }}
+{{- $dbHost = required "A valid .Values.pvault.db.hostname entry required!" .Values.pvault.db.hostname | quote }}
+{{- $dbName = required "A valid .Values.pvault.db.name entry required!" .Values.pvault.db.name | quote }}
+{{- $dbUser = required "A valid .Values.pvault.db.user entry required!" .Values.pvault.db.user | quote }}
 {{- end }}
-
 kind: ConfigMap
 apiVersion: v1
 metadata:
   name: {{ include "pvault-server.fullname" . }}-variables
-  labels:
-    {{- include "pvault-server.labels" . | nindent 4 }}
-  {{- with .Values.additionalConfigMapAnnotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
+  namespace: {{ include "pvault-server.namespace" . | quote }}
+  labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if or .Values.additionalConfigMapAnnotations .Values.commonAnnotations }}
+  {{- $annotations := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.additionalConfigMapAnnotations .Values.commonAnnotations ) "context" . ) }}
+  annotations: {{- include "pvault-server.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
   {{- end }}
 data:
   pvault.system.toml: |
@@ -98,11 +95,11 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: {{ include "pvault-server.fullname" . }}-env-vars
-  labels:
-    {{- include "pvault-server.labels" . | nindent 4 }}
-  {{- with .Values.additionalConfigMapAnnotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
+  namespace: {{ include "pvault-server.namespace" . | quote }}
+  labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if or .Values.additionalConfigMapAnnotations .Values.commonAnnotations }}
+  {{- $annotations := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.additionalConfigMapAnnotations .Values.commonAnnotations ) "context" . ) }}
+  annotations: {{- include "pvault-server.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
   {{- end }}
 data:
   PVAULT_LOG_DATADOG_ENABLE: {{ required "A valid .Values.pvault.log.datadogEnable is required" .Values.pvault.log.datadogEnable | quote }}
