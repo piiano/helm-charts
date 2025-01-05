@@ -1,32 +1,32 @@
 {{- $hasKmsSeed := or .Values.pvault.kms.existingSeedSecret .Values.pvault.kms.seed }}
 {{- $hasKmsExportSeed := or .Values.pvault.kms.existingExportSeedSecret .Values.pvault.kms.exportSeed }}
-{{- $deployLabels := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.labels .Values.commonLabels ) "context" . ) }}
+{{- $deployLabels := include "pvault-server.tplvalues.merge" (dict "values" (list .Values.labels .Values.commonLabels) "context" .) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "pvault-server.fullname" . }}
   namespace: {{ include "pvault-server.namespace" . | quote }}
-  labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" $deployLabels "context" $ ) | nindent 4 }}
+  labels: {{- include "pvault-server.labels.standard" (dict "customLabels" $deployLabels "context" .) | nindent 4 }}
   {{- if or .Values.annotations .Values.commonAnnotations }}
-  {{- $deployAnnotations := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.annotations .Values.commonAnnotations ) "context" . ) }}
-  annotations: {{- include "pvault-server.tplvalues.render" ( dict "value" $deployAnnotations "context" $) | nindent 4 }}
+  {{- $deployAnnotations := include "pvault-server.tplvalues.merge" (dict "values" (list .Values.annotations .Values.commonAnnotations) "context" .) }}
+  annotations: {{- include "pvault-server.tplvalues.render" (dict "value" $deployAnnotations "context" .) | nindent 4 }}
   {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   {{- if .Values.updateStrategy }}
-  strategy: {{ include "pvault-server.tplvalues.render" (dict "value" .Values.updateStrategy "context" $) | nindent 4 }}
+  strategy: {{ include "pvault-server.tplvalues.render" (dict "value" .Values.updateStrategy "context" .) | nindent 4 }}
   {{- end }}
   template:
     metadata:
       annotations:
         {{- if or .Values.podAnnotations .Values.commonAnnotations }}
-        {{- $podAnnotations := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.podAnnotations .Values.commonAnnotations ) "context" . ) }}
-        {{- include "pvault-server.tplvalues.render" ( dict "value" $podAnnotations "context" $) | nindent 8 }}
+        {{- $podAnnotations := include "pvault-server.tplvalues.merge" (dict "values" (list .Values.podAnnotations .Values.commonAnnotations) "context" .) }}
+        {{- include "pvault-server.tplvalues.render" (dict "value" $podAnnotations "context" .) | nindent 8 }}
         {{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-      labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" ( include "pvault-server.pod.labels" $ ) "context" $ ) | nindent 8 }}
+      labels: {{- include "pvault-server.labels.standard" (dict "customLabels" (include "pvault-server.pod.labels" .) "context" .) | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -42,12 +42,12 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- end }}
       {{- if .Values.podSecurityContext.enabled }}
-      securityContext: {{- include "pvault-server.compatibility.renderSecurityContext" (dict "secContext" .Values.podSecurityContext "context" $) | nindent 8 }}
+      securityContext: {{- include "pvault-server.compatibility.renderSecurityContext" (dict "secContext" .Values.podSecurityContext "context" .) | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           {{- if .Values.securityContext.enabled }}
-          securityContext: {{- include "pvault-server.compatibility.renderSecurityContext" (dict "secContext" .Values.securityContext "context" $) | nindent 12 }}
+          securityContext: {{- include "pvault-server.compatibility.renderSecurityContext" (dict "secContext" .Values.securityContext "context" .) | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -165,4 +165,4 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
   selector:
-    matchLabels: {{- include "pvault-server.labels.matchLabels" ( dict "customLabels" ( include "pvault-server.pod.labels" $ ) "context" $ ) | nindent 6 }}
+    matchLabels: {{- include "pvault-server.labels.matchLabels" (dict "customLabels" (include "pvault-server.pod.labels" .) "context" .) | nindent 6 }}

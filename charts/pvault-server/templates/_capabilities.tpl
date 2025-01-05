@@ -220,7 +220,7 @@ This check is introduced as a regexMatch instead of {{ if .Capabilities.HelmVers
 **To be removed when the catalog's minimun Helm version is 3.3**
 */}}
 {{- define "pvault-server.capabilities.supportsHelmVersion" -}}
-{{- if regexMatch "{(v[0-9])*[^}]*}}$" (.Capabilities | toString ) }}
+{{- if regexMatch "{(v[0-9])*[^}]*}}$" (.Capabilities | toString) }}
   {{- true -}}
 {{- end -}}
 {{- end -}}

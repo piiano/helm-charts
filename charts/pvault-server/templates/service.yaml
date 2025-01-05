@@ -1,13 +1,13 @@
-{{- $serviceLabels := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.service.labels .Values.commonLabels ) "context" . ) }}
+{{- $serviceLabels := include "pvault-server.tplvalues.merge" (dict "values" (list .Values.service.labels .Values.commonLabels) "context" .) }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "pvault-server.fullname" . }}
   namespace: {{ include "pvault-server.namespace" . | quote }}
-  labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" $serviceLabels "context" $ ) | nindent 4 }}
+  labels: {{- include "pvault-server.labels.standard" (dict "customLabels" $serviceLabels "context" .) | nindent 4 }}
   {{- if or .Values.service.annotations .Values.commonAnnotations }}
-  {{- $serviceAnnotations := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.service.annotations .Values.commonAnnotations ) "context" . ) }}
-  annotations: {{- include "pvault-server.tplvalues.render" ( dict "value" $serviceAnnotations "context" $) | nindent 4 }}
+  {{- $serviceAnnotations := include "pvault-server.tplvalues.merge" (dict "values" (list .Values.service.annotations .Values.commonAnnotations) "context" .) }}
+  annotations: {{- include "pvault-server.tplvalues.render" (dict "value" $serviceAnnotations "context" .) | nindent 4 }}
   {{- end }}
 spec:
   type: {{ .Values.service.type }}
@@ -27,10 +27,10 @@ spec:
   sessionAffinity: {{ .Values.service.sessionAffinity }}
   {{- end }}
   {{- if .Values.service.sessionAffinityConfig }}
-  sessionAffinityConfig: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.service.sessionAffinityConfig "context" $) | nindent 4 }}
+  sessionAffinityConfig: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.service.sessionAffinityConfig "context" .) | nindent 4 }}
   {{- end }}
   {{- if .Values.service.trafficDistribution }}
-  trafficDistribution: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.service.trafficDistribution "context" $) | nindent 4 }}
+  trafficDistribution: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.service.trafficDistribution "context" .) | nindent 4 }}
   {{- end }}
   ports:
     - name: pvault-port
@@ -42,4 +42,4 @@ spec:
       {{- else if eq .Values.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}
-  selector: {{- include "pvault-server.labels.matchLabels" ( dict "customLabels" ( include "pvault-server.pod.labels" $ ) "context" $ ) | nindent 4 }}
+  selector: {{- include "pvault-server.labels.matchLabels" (dict "customLabels" (include "pvault-server.pod.labels" .) "context" .) | nindent 4 }}
