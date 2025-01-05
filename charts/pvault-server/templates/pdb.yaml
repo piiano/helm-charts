@@ -1,0 +1,20 @@
+{{- if .Values.pdb.enabled }}
+apiVersion: {{ include "pvault-server.capabilities.policy.apiVersion" . }}
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "pvault-server.fullname" . }}
+  namespace: {{ include "pvault-server.namespace" . | quote }}
+  labels: {{- include "pvault-server.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.commonAnnotations "context" .) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.pdb.minAvailable }}
+  minAvailable: {{ .Values.pdb.minAvailable }}
+  {{- end  }}
+  {{- if or .Values.pdb.maxUnavailable (not .Values.pdb.minAvailable) }}
+  maxUnavailable: {{ .Values.pdb.maxUnavailable | default 1 }}
+  {{- end  }}
+  selector:
+    matchLabels: {{- include "pvault-server.labels.matchLabels" (dict "customLabels" (include "pvault-server.pod.labels" .) "context" .) | nindent 6 }}
+{{- end }}
