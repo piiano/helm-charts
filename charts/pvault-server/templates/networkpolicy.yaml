@@ -19,18 +19,27 @@ spec:
     - {}
   {{- else }}
   egress:
-    # Allow DNS
+    {{- /* Allow DNS */}}
     - ports:
-      - port: 53
-        protocol: TCP
-      - port: 53
-        protocol: UDP
+        - port: 53
+          protocol: TCP
+        - port: 53
+          protocol: UDP
+    {{- /* Allow builtin Postgres */}}
+    {{- if .Values.postgresql.enabled }}
+    - ports:
+        - port: 5432
+          protocol: TCP
+      to:
+        - podSelector:
+            matchLabels: {{- include "pvault-server.labels.matchLabels" (dict "customLabels" (dict "app.kubernetes.io/name" "postgresql") "context" .) | nindent 14 }}
+    {{- end }}
     {{- if .Values.networkPolicy.extraEgress }}
     {{- include "pvault-server.tplvalues.render" (dict "value" .Values.networkPolicy.extraEgress "context" .) | nindent 4 }}
     {{- end }}
   {{- end }}
   ingress:
-    # Allow connections to service port
+    {{- /* Allow connections to `pvault-port` */}}
     - ports:
         - port: 8123
           protocol: TCP
