@@ -22,14 +22,14 @@ set -x
 OLD_VAULT_VERSION=$(helm show values --jsonpath '{.image.tag}' ${DIR})
 
 # replace supported vault version message in readme
-sed -i '' "s|$LINE \`$OLD_VAULT_VERSION\`|$LINE \`$NEW_VAULT_VERSION\`|g" ${README}
+sed -i '' -e "s|$LINE \`$OLD_VAULT_VERSION\`|$LINE \`$NEW_VAULT_VERSION\`|g" ${README}
 
 # replace image tag in readme
-sed -i '' "s|\`$OLD_VAULT_VERSION\`|\`$NEW_VAULT_VERSION\`|g" ${README}
-sed -i '' "s|piiano/pvault-cli:$OLD_VAULT_VERSION\"|piiano/pvault-cli:$NEW_VAULT_VERSION\"|g" ${README}
+sed -i '' -e "s|\`$OLD_VAULT_VERSION\`|\`$NEW_VAULT_VERSION\`|g" ${README}
+sed -i '' -e "s|piiano/pvault-cli:$OLD_VAULT_VERSION\"|piiano/pvault-cli:$NEW_VAULT_VERSION\"|g" ${README}
 
 # replace tag in vaules.yaml
-sed -i '' "s|tag: $OLD_VAULT_VERSION|tag: $NEW_VAULT_VERSION|g" ${VALUES}
+sed -i '' -e "s|tag: $OLD_VAULT_VERSION|tag: $NEW_VAULT_VERSION|g" ${VALUES}
 
 # find and generate new helm chart version
 # use ^ to find the version starting at the beginning of a line to not confuse with psql version
