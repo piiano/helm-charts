@@ -1,0 +1,59 @@
+{{- if .Values.networkPolicy.enabled }}
+kind: NetworkPolicy
+apiVersion: {{ include "pvault-server.capabilities.networkPolicy.apiVersion" . }}
+metadata:
+  name: {{ include "pvault-server.fullname" . }}
+  namespace: {{ include "pvault-server.namespace" . | quote }}
+  labels: {{- include "pvault-server.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.commonAnnotations "context" .) | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    matchLabels: {{- include "pvault-server.labels.matchLabels" (dict "customLabels" (include "pvault-server.pod.labels" .) "context" .) | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- if .Values.networkPolicy.allowExternalEgress }}
+  egress:
+    - {}
+  {{- else }}
+  egress:
+    # Allow DNS
+    - ports:
+      - port: 53
+        protocol: TCP
+      - port: 53
+        protocol: UDP
+    {{- if .Values.networkPolicy.extraEgress }}
+    {{- include "pvault-server.tplvalues.render" (dict "value" .Values.networkPolicy.extraEgress "context" .) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  ingress:
+    # Allow connections to service port
+    - ports:
+        - port: 8123
+          protocol: TCP
+      {{- if not .Values.networkPolicy.allowExternal }}
+      from:
+        - podSelector:
+            matchLabels: {{- include "pvault-server.labels.matchLabels" (dict "customLabels" (include "pvault-server.pod.labels" .) "context" .) | nindent 14 }}
+        {{- end }}
+        {{- if .Values.networkPolicy.ingressNSMatchLabels }}
+        - namespaceSelector:
+            matchLabels:
+              {{- range $key, $value := .Values.networkPolicy.ingressNSMatchLabels }}
+              {{ $key | quote }}: {{ $value | quote }}
+              {{- end }}
+        {{- end }}
+        {{- if .Values.networkPolicy.ingressPodMatchLabels }}
+        - podSelector:
+            matchLabels:
+              {{- range $key, $value := .Values.networkPolicy.ingressPodMatchLabels }}
+              {{ $key | quote }}: {{ $value | quote }}
+              {{- end }}
+      {{- end }}
+    {{- if .Values.networkPolicy.extraIngress }}
+    {{- include "pvault-server.tplvalues.render" (dict "value" .Values.networkPolicy.extraIngress "context" .) | nindent 4 }}
+    {{- end }}
+{{- end }}

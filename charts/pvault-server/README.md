@@ -241,59 +241,62 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Deployment parameters
 
-| Name                                            | Description                                                                   | Value                  |
-| ----------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------- |
-| `labels`                                        | Add labels to Piiano Vault Server deployment.                                 | `{}`                   |
-| `annotations`                                   | Add annotations to Piiano Vault Server deployment.                            | `{}`                   |
-| `replicaCount`                                  | Number of Piiano Vault Servers instances to run.                              | `1`                    |
-| `updateStrategy.type`                           | Set up update strategy for Piiano Vault Server deployment.                    | `RollingUpdate`        |
-| `image.repository`                              | Piiano Vault Server image repositoryl                                         | `piiano/pvault-server` |
-| `image.pullPolicy`                              | Piiano Vault Server image pull policy.                                        | `IfNotPresent`         |
-| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).               | `1.14.2`               |
-| `imagePullSecrets`                              | Specify image pull secrets.                                                   | `[]`                   |
-| `automountServiceAccountToken`                  | Mount Service Account token in pod                                            | `true`                 |
-| `serviceAccount.create`                         | Whether a service account should be created.                                  | `true`                 |
-| `serviceAccount.annotations`                    | Annotations to add to the service account                                     | `{}`                   |
-| `serviceAccount.name`                           | The name of the service account to use.                                       | `""`                   |
-| `dnsPolicy`                                     | Default dnsPolicy setting                                                     | `ClusterFirst`         |
-| `podLabels`                                     | Add labels to Piiano Vault Server pods.                                       | `{}`                   |
-| `podAnnotations`                                | Add annotations to Piiano Vault Server pods.                                  | `{}`                   |
-| `podSecurityContext`                            | Pod Security Context configuration.                                           | `{}`                   |
-| `securityContext`                               | Security Context configuration.                                               | `{}`                   |
-| `livenessProbe`                                 | Liveness Probe configuration.                                                 | `{}`                   |
-| `readinessProbe`                                | Readiness Probe configuration.                                                | `{}`                   |
-| `startupProbe`                                  | Startup Probe configuration.                                                  | `{}`                   |
-| `terminationGracePeriodSeconds`                 | Specify Pod termination grace period.                                         | `30`                   |
-| `service.labels`                                | Add labels to Piiano Vault Server service.                                    | `{}`                   |
-| `service.annotations`                           | Add annotations to Piiano Vault Server service.                               | `{}`                   |
-| `service.type`                                  | Kubernetes Service type. For example: ClusterIP / NodePort.                   | `ClusterIP`            |
-| `service.port`                                  | Piiano Vault Server service port.                                             | `8123`                 |
-| `service.nodePort`                              | Piiano Vault Server service node port.                                        | `nil`                  |
-| `service.externalTrafficPolicy`                 | Piiano Vault Server service external traffic policy.                          | `nil`                  |
-| `service.internalTrafficPolicy`                 | Piiano Vault Server service internal traffic policy.                          | `nil`                  |
-| `service.loadBalancerClass`                     | Piiano Vault Server service loadbalancer class.                               | `nil`                  |
-| `service.clusterIP`                             | Piiano Vault Server service cluster IP.                                       | `nil`                  |
-| `service.sessionAffinity`                       | Piiano Vault Server service session affinity.                                 | `nil`                  |
-| `service.sessionAffinityConfig`                 | Piiano Vault Server service session affinity config.                          | `nil`                  |
-| `service.trafficDistribution`                   | Piiano Vault Server service traffic distribution.                             | `nil`                  |
-| `ingress.enabled`                               | Enable ingress generation.                                                    | `false`                |
-| `ingress.className`                             | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) | `""`                   |
-| `ingress.annotations`                           | Additional custom annotations for the ingress.                                | `{}`                   |
-| `ingress.hosts`                                 | An array with hostname(s) to be covered with the ingress.                     | `[]`                   |
-| `ingress.tls`                                   | TLS configuration for hostname(s) to be covered with this ingress.            | `[]`                   |
-| `resources.limits`                              | The resources limits for the container.                                       | `{}`                   |
-| `resources.requests`                            | The requested resources for the container.                                    | `{}`                   |
-| `autoscaling.enabled`                           | Enable autoscaling for replicas.                                              | `false`                |
-| `autoscaling.annotations`                       | HPA annotations.                                                              | `{}`                   |
-| `autoscaling.minReplicas`                       | Minimum number of replicas.                                                   | `1`                    |
-| `autoscaling.maxReplicas`                       | Maximum number of replicas.                                                   | `100`                  |
-| `autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage.                                            | `80`                   |
-| `autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage.                                         | `undefined`            |
-| `nodeSelector`                                  | Node labels for pod assignment.                                               | `{}`                   |
-| `tolerations`                                   | Tolerations for pod assignment.                                               | `[]`                   |
-| `affinity`                                      | Affinity for pod assignment.                                                  | `{}`                   |
-| `additionalSecretsAnnotations`                  | Add annotations to the Kubernetes secret.                                     | `{}`                   |
-| `additionalConfigMapAnnotations`                | Add annotations to the ConfigMaps.                                            | `{}`                   |
+| Name                                            | Description                                                                                                                                    | Value                  |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| `labels`                                        | Add labels to Piiano Vault Server deployment.                                                                                                  | `{}`                   |
+| `annotations`                                   | Add annotations to Piiano Vault Server deployment.                                                                                             | `{}`                   |
+| `replicaCount`                                  | Number of Piiano Vault Servers instances to run.                                                                                               | `1`                    |
+| `updateStrategy.type`                           | Set up update strategy for Piiano Vault Server deployment.                                                                                     | `RollingUpdate`        |
+| `image.repository`                              | Piiano Vault Server image repositoryl                                                                                                          | `piiano/pvault-server` |
+| `image.pullPolicy`                              | Piiano Vault Server image pull policy.                                                                                                         | `IfNotPresent`         |
+| `image.tag`                                     | Piiano Vault Server image tag (immutable tags are recommended).                                                                                | `1.14.2`               |
+| `imagePullSecrets`                              | Specify image pull secrets.                                                                                                                    | `[]`                   |
+| `automountServiceAccountToken`                  | Mount Service Account token in pod                                                                                                             | `true`                 |
+| `serviceAccount.create`                         | Whether a service account should be created.                                                                                                   | `true`                 |
+| `serviceAccount.annotations`                    | Annotations to add to the service account                                                                                                      | `{}`                   |
+| `serviceAccount.name`                           | The name of the service account to use.                                                                                                        | `""`                   |
+| `dnsPolicy`                                     | Default dnsPolicy setting                                                                                                                      | `ClusterFirst`         |
+| `podLabels`                                     | Add labels to Piiano Vault Server pods.                                                                                                        | `{}`                   |
+| `podAnnotations`                                | Add annotations to Piiano Vault Server pods.                                                                                                   | `{}`                   |
+| `podSecurityContext`                            | Pod Security Context configuration.                                                                                                            | `{}`                   |
+| `securityContext`                               | Security Context configuration.                                                                                                                | `{}`                   |
+| `livenessProbe`                                 | Liveness Probe configuration.                                                                                                                  | `{}`                   |
+| `readinessProbe`                                | Readiness Probe configuration.                                                                                                                 | `{}`                   |
+| `startupProbe`                                  | Startup Probe configuration.                                                                                                                   | `{}`                   |
+| `terminationGracePeriodSeconds`                 | Specify Pod termination grace period.                                                                                                          | `30`                   |
+| `service.labels`                                | Add labels to Piiano Vault Server service.                                                                                                     | `{}`                   |
+| `service.annotations`                           | Add annotations to Piiano Vault Server service.                                                                                                | `{}`                   |
+| `service.type`                                  | Kubernetes Service type. For example: ClusterIP / NodePort.                                                                                    | `ClusterIP`            |
+| `service.port`                                  | Piiano Vault Server service port.                                                                                                              | `8123`                 |
+| `service.nodePort`                              | Piiano Vault Server service node port.                                                                                                         | `nil`                  |
+| `service.externalTrafficPolicy`                 | Piiano Vault Server service external traffic policy.                                                                                           | `nil`                  |
+| `service.internalTrafficPolicy`                 | Piiano Vault Server service internal traffic policy.                                                                                           | `nil`                  |
+| `service.loadBalancerClass`                     | Piiano Vault Server service loadbalancer class.                                                                                                | `nil`                  |
+| `service.clusterIP`                             | Piiano Vault Server service cluster IP.                                                                                                        | `nil`                  |
+| `service.sessionAffinity`                       | Piiano Vault Server service session affinity.                                                                                                  | `nil`                  |
+| `service.sessionAffinityConfig`                 | Piiano Vault Server service session affinity config.                                                                                           | `nil`                  |
+| `service.trafficDistribution`                   | Piiano Vault Server service traffic distribution.                                                                                              | `nil`                  |
+| `ingress.enabled`                               | Enable ingress generation.                                                                                                                     | `false`                |
+| `ingress.className`                             | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)                                                                  | `""`                   |
+| `ingress.annotations`                           | Additional custom annotations for the ingress.                                                                                                 | `{}`                   |
+| `ingress.hosts`                                 | An array with hostname(s) to be covered with the ingress.                                                                                      | `[]`                   |
+| `ingress.tls`                                   | TLS configuration for hostname(s) to be covered with this ingress.                                                                             | `[]`                   |
+| `resources.limits`                              | The resources limits for the container.                                                                                                        | `{}`                   |
+| `resources.requests`                            | The requested resources for the container.                                                                                                     | `{}`                   |
+| `autoscaling.enabled`                           | Enable autoscaling for replicas.                                                                                                               | `false`                |
+| `autoscaling.annotations`                       | HPA annotations.                                                                                                                               | `{}`                   |
+| `autoscaling.minReplicas`                       | Minimum number of replicas.                                                                                                                    | `1`                    |
+| `autoscaling.maxReplicas`                       | Maximum number of replicas.                                                                                                                    | `100`                  |
+| `autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage.                                                                                                             | `80`                   |
+| `autoscaling.targetMemoryUtilizationPercentage` | Target Memory utilization percentage.                                                                                                          | `undefined`            |
+| `pdb.enabled`                                   | Create a Pod Disruption Budget                                                                                                                 | `false`                |
+| `pdb.minAvailable`                              | Minimum number/percentage of pods that should remain scheduled                                                                                 | `""`                   |
+| `pdb.maxUnavailable`                            | Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `pdb.minAvailable` and `pdb.maxUnavailable` are empty. | `""`                   |
+| `nodeSelector`                                  | Node labels for pod assignment.                                                                                                                | `{}`                   |
+| `tolerations`                                   | Tolerations for pod assignment.                                                                                                                | `[]`                   |
+| `affinity`                                      | Affinity for pod assignment.                                                                                                                   | `{}`                   |
+| `additionalSecretsAnnotations`                  | Add annotations to the Kubernetes secret.                                                                                                      | `{}`                   |
+| `additionalConfigMapAnnotations`                | Add annotations to the ConfigMaps.                                                                                                             | `{}`                   |
 
 ### Piiano Vault parameters
 
@@ -350,6 +353,18 @@ The command removes all the Kubernetes components associated with the chart and 
 | `pvault.startupDataTypesFile`             | Vault startup file for data types configuration.                                                                                                                                                                                                                                                                                                                      | `""`                |
 | `pvault.extraEnvVars`                     | Overriding environment variables.                                                                                                                                                                                                                                                                                                                                     | `{}`                |
 | `pvault.directEnvVars`                    | Directly injected environment variables. WARNING: Directly setting environment variables through this parameter is not recommended. This should only be used if ConfigMaps cannot be used due to a technical reason. Usage of this parameter bypasses ConfigMaps and injects environment variables directly into the Deployment, which may not follow best practices. | `{}`                |
+
+### Network Policies
+
+| Name                                    | Description                                                     | Value   |
+| --------------------------------------- | --------------------------------------------------------------- | ------- |
+| `networkPolicy.enabled`                 | Specifies whether a NetworkPolicy should be created             | `false` |
+| `networkPolicy.allowExternal`           | Allow ingress access from any destination to the service port.  | `true`  |
+| `networkPolicy.allowExternalEgress`     | Allow the pod to access any range of port and all destinations. | `true`  |
+| `networkPolicy.extraIngress`            | Add extra ingress rules to the NetworkPolicy                    | `[]`    |
+| `networkPolicy.extraEgress`             | Add extra ingress rules to the NetworkPolicy                    | `[]`    |
+| `networkPolicy.ingressNSMatchLabels`    | Labels to match to allow traffic from other namespaces          | `{}`    |
+| `networkPolicy.ingressNSPodMatchLabels` | Pod labels to match to allow traffic from other namespaces      | `{}`    |
 
 ### Environment parameters
 

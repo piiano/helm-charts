@@ -16,10 +16,10 @@ apiVersion: v1
 metadata:
   name: {{ include "pvault-server.fullname" . }}-variables
   namespace: {{ include "pvault-server.namespace" . | quote }}
-  labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  labels: {{- include "pvault-server.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
   {{- if or .Values.additionalConfigMapAnnotations .Values.commonAnnotations }}
-  {{- $annotations := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.additionalConfigMapAnnotations .Values.commonAnnotations ) "context" . ) }}
-  annotations: {{- include "pvault-server.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
+  {{- $annotations := include "pvault-server.tplvalues.merge" (dict "values" (list .Values.additionalConfigMapAnnotations .Values.commonAnnotations) "context" .) }}
+  annotations: {{- include "pvault-server.tplvalues.render" (dict "value" $annotations "context" .) | nindent 4 }}
   {{- end }}
 data:
   pvault.system.toml: |
@@ -96,10 +96,10 @@ apiVersion: v1
 metadata:
   name: {{ include "pvault-server.fullname" . }}-env-vars
   namespace: {{ include "pvault-server.namespace" . | quote }}
-  labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  labels: {{- include "pvault-server.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
   {{- if or .Values.additionalConfigMapAnnotations .Values.commonAnnotations }}
-  {{- $annotations := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.additionalConfigMapAnnotations .Values.commonAnnotations ) "context" . ) }}
-  annotations: {{- include "pvault-server.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
+  {{- $annotations := include "pvault-server.tplvalues.merge" (dict "values" (list .Values.additionalConfigMapAnnotations .Values.commonAnnotations) "context" .) }}
+  annotations: {{- include "pvault-server.tplvalues.render" (dict "value" $annotations "context" .) | nindent 4 }}
   {{- end }}
 data:
   PVAULT_LOG_DATADOG_ENABLE: {{ required "A valid .Values.pvault.log.datadogEnable is required" .Values.pvault.log.datadogEnable | quote }}

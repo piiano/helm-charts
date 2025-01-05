@@ -1,13 +1,13 @@
 {{- if .Values.autoscaling.enabled }}
-apiVersion: {{ include "pvault-server.capabilities.hpa.apiVersion" ( dict "context" $ ) }}
+apiVersion: {{ include "pvault-server.capabilities.hpa.apiVersion" (dict "context" .) }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "pvault-server.fullname" . }}
   namespace: {{ include "pvault-server.namespace" . | quote }}
-  labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  labels: {{- include "pvault-server.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
   {{- if or .Values.autoscaling.annotations .Values.commonAnnotations }}
-  {{- $annotations := include "pvault-server.tplvalues.merge" ( dict "values" ( list .Values.autoscaling.annotations .Values.commonAnnotations ) "context" . ) }}
-  annotations: {{- include "pvault-server.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
+  {{- $annotations := include "pvault-server.tplvalues.merge" (dict "values" (list .Values.autoscaling.annotations .Values.commonAnnotations) "context" .) }}
+  annotations: {{- include "pvault-server.tplvalues.render" (dict "value" $annotations "context" .) | nindent 4 }}
   {{- end }}
 spec:
   scaleTargetRef:

@@ -74,7 +74,7 @@ overwrote them on metadata.labels fields.
 */}}
 {{- define "pvault-server.labels.matchLabels" -}}
 {{- if and (hasKey . "customLabels") (hasKey . "context") -}}
-{{ merge (pick (include "pvault-server.tplvalues.render" (dict "value" .customLabels "context" .context) | fromYaml) "app.kubernetes.io/name" "app.kubernetes.io/instance") (dict "app.kubernetes.io/name" (include "pvault-server.name" .context) "app.kubernetes.io/instance" .context.Release.Name ) | toYaml }}
+{{ merge (pick (include "pvault-server.tplvalues.render" (dict "value" .customLabels "context" .context) | fromYaml) "app.kubernetes.io/name" "app.kubernetes.io/instance") (dict "app.kubernetes.io/name" (include "pvault-server.name" .context) "app.kubernetes.io/instance" .context.Release.Name) | toYaml }}
 {{- else -}}
 app.kubernetes.io/name: {{ include "pvault-server.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
@@ -122,8 +122,8 @@ Get the a volume template for a secret.
 Source: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_tplvalues.tpl
 Renders a value that contains template perhaps with scope if the scope is present.
 Usage:
-{{ include "pvault-server.tplvalues.render" ( dict "value" .Values.path.to.the.Value "context" $ ) }}
-{{ include "pvault-server.tplvalues.render" ( dict "value" .Values.path.to.the.Value "context" $ "scope" $app ) }}
+{{ include "pvault-server.tplvalues.render" (dict "value" .Values.path.to.the.Value "context" $) }}
+{{ include "pvault-server.tplvalues.render" (dict "value" .Values.path.to.the.Value "context" $ "scope" $app) }}
 Borrowed from https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_tplvalues.tpl
 */}}
 {{- define "pvault-server.tplvalues.render" -}}
@@ -144,7 +144,7 @@ Source: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_tp
 Merge a list of values that contains template after rendering them.
 Merge precedence is consistent with http://masterminds.github.io/sprig/dicts.html#merge-mustmerge
 Usage:
-{{ include "pvault-server.tplvalues.merge" ( dict "values" (list .Values.path.to.the.Value1 .Values.path.to.the.Value2) "context" $ ) }}
+{{ include "pvault-server.tplvalues.merge" (dict "values" (list .Values.path.to.the.Value1 .Values.path.to.the.Value2) "context" $) }}
 */}}
 {{- define "pvault-server.tplvalues.merge" -}}
 {{- $dst := dict -}}

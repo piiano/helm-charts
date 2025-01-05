@@ -4,7 +4,7 @@ apiVersion: v1
 metadata:
   name: {{ include "pvault-server.fullname" . }}-db-ca-cert
   namespace: {{ include "pvault-server.namespace" . | quote }}
-  labels: {{- include "pvault-server.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  labels: {{- include "pvault-server.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
 data:
   db-ca-bundle.pem: |-
     {{ .Values.dbCARootCertificate | nindent 4 | trim }}
