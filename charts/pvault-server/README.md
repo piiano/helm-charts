@@ -68,7 +68,7 @@ helm upgrade --install db bitnami/postgresql --namespace postgres --create-names
     --set-string auth.username=pvault \
     --set-string auth.password=pvault \
     --set-string auth.database=pvault \
-    --set primary.persistence.enabled=false 
+    --set primary.persistence.enabled=false
 ```
 
 Postgres will be available from within the cluster with the following hostname: `db-postgresql.postgres.svc.cluster.local`.
@@ -99,7 +99,7 @@ Use the following command line to deploy Piiano Vault Server on a typical Kubern
 2. Run:
 
   ```sh
-    helm upgrade --install pvault-server piiano/pvault-server \ 
+    helm upgrade --install pvault-server piiano/pvault-server \
       --create-namespace --namespace pvault \
       --set pvault.devmode=true \
       --set-string pvault.db.user=${DB_USER} \
