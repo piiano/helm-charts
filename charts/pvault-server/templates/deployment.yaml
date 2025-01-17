@@ -99,7 +99,7 @@ spec:
             - name: DD_AGENT_HOST
               valueFrom:
                 fieldRef:
-                  fieldPath: status.hostIP    
+                  fieldPath: status.hostIP
           {{- end }}
           {{- with .Values.dbCARootCertificate }}
             - name: PGSSLROOTCERT

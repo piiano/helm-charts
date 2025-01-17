@@ -4,7 +4,7 @@
 Expand the name of the chart.
 */}}
 {{- define "pvault-server.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- default .Chart.Name (tpl .Values.nameOverride .) | trunc 63 | trimSuffix "-" -}}
 {{- end }}
 
 {{/*
@@ -13,10 +13,11 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "pvault-server.fullname" -}}
-{{- if .Values.fullnameOverride -}}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- $fullNameRendered := tpl .Values.fullnameOverride . -}}
+{{- if $fullNameRendered -}}
+{{- $fullNameRendered | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- $name := default .Chart.Name (tpl .Values.nameOverride .) -}}
 {{- if contains $name .Release.Name -}}
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -86,9 +87,9 @@ Create the name of the service account to use
 */}}
 {{- define "pvault-server.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "pvault-server.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "pvault-server.fullname" .) (tpl .Values.serviceAccount.name .) }}
 {{- else }}
-{{- default "default" .Values.serviceAccount.name }}
+{{- default "default" (tpl .Values.serviceAccount.name .) }}
 {{- end }}
 {{- end }}
 
@@ -96,14 +97,14 @@ Create the name of the service account to use
 Get the name of an existing secret, or use default.
 */}}
 {{- define "pvault-server.secrets.name" }}
-{{- default (include "pvault-server.fullname" .context) .existingSecret }}
+{{- default (include "pvault-server.fullname" .context) (tpl .existingSecret .context) }}
 {{- end }}
 
 {{/*
 Get the key of an existing secret, or use default.
 */}}
 {{- define "pvault-server.secrets.key" }}
-{{- default .defaultSecretKey .existingSecretKey }}
+{{- default .defaultSecretKey (tpl .existingSecretKey .context) }}
 {{- end }}
 
 {{/*

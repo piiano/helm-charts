@@ -4,12 +4,12 @@
 {{- /* If dev psql is enabled, override Vault configurations. Otherwise, enforce them */}}
 {{- if .Values.postgresql.enabled }}
 {{- $dbHost = printf "%s-postgresql" .Chart.Name | quote }}
-{{- $dbName = default "pvault" .Values.postgresql.auth.database | quote }}
-{{- $dbUser = default "pvault" .Values.postgresql.auth.username | quote }}
+{{- $dbName = default "pvault" (tpl .Values.postgresql.auth.database .) | quote }}
+{{- $dbUser = default "pvault" (tpl .Values.postgresql.auth.username .) | quote }}
 {{- else }}
-{{- $dbHost = required "A valid .Values.pvault.db.hostname entry required!" .Values.pvault.db.hostname | quote }}
-{{- $dbName = required "A valid .Values.pvault.db.name entry required!" .Values.pvault.db.name | quote }}
-{{- $dbUser = required "A valid .Values.pvault.db.user entry required!" .Values.pvault.db.user | quote }}
+{{- $dbHost = required "A valid .Values.pvault.db.hostname entry required!" (tpl .Values.pvault.db.hostname .) | quote }}
+{{- $dbName = required "A valid .Values.pvault.db.name entry required!" (tpl .Values.pvault.db.name .) | quote }}
+{{- $dbUser = required "A valid .Values.pvault.db.user entry required!" (tpl .Values.pvault.db.user .) | quote }}
 {{- end }}
 kind: ConfigMap
 apiVersion: v1
@@ -66,8 +66,8 @@ data:
     custom_types_enable = {{ .Values.pvault.features.customTypesEnable }}
 
     [kms]
-    uri   = {{ .Values.pvault.kms.uri | quote }}
-    export_uri  = {{ .Values.pvault.kms.exportUri | quote }}
+    uri   = {{ tpl .Values.pvault.kms.uri . | quote }}
+    export_uri  = {{ tpl .Values.pvault.kms.exportUri . | quote }}
     {{- if kindIs "bool" .Values.pvault.kms.allow_local }}
     enable = {{ .Values.pvault.kms.allow_local }}
     {{ end }}
@@ -75,9 +75,9 @@ data:
     [log]
     level               = {{ .Values.pvault.log.level | quote }}
     datadog_apm_enable  = {{ .Values.pvault.log.datadogAPMEnable }}
-    customer_region     = {{ .Values.pvault.log.customerRegion | quote }}
-    customer_env        = {{ .Values.pvault.log.customerEnv | quote }}
-    customer_identifier = {{ required "A valid .Values.pvault.log.customerIdentifier is required." .Values.pvault.log.customerIdentifier | quote }}
+    customer_region     = {{ tpl .Values.pvault.log.customerRegion . | quote }}
+    customer_env        = {{ tpl .Values.pvault.log.customerEnv . | quote }}
+    customer_identifier = {{ required "A valid .Values.pvault.log.customerIdentifier is required." (tpl .Values.pvault.log.customerIdentifier .) | quote }}
   {{- with .Values.pvault.startupIAMFile }}
   pvault.iam.toml: |-
     {{- . | nindent 4 }}
