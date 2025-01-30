@@ -52,7 +52,7 @@ image:
   pullPolicy: IfNotPresent
   ## @param image.tag Piiano Vault Server image tag (immutable tags are recommended).
   #
-  tag: 0.15.0
+  tag: 1.15.0
 
 ## @param imagePullSecrets Specify image pull secrets.
 ##
