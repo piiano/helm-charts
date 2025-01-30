@@ -18,6 +18,9 @@ spec:
   {{- if .Values.updateStrategy }}
   strategy: {{ include "pvault-server.tplvalues.render" (dict "value" .Values.updateStrategy "context" .) | nindent 4 }}
   {{- end }}
+  {{- if .Values.minReadySeconds }}
+  minReadySeconds: {{ include "pvault-server.tplvalues.render" (dict "value" .Values.minReadySeconds "context" .) }}
+  {{- end }}
   template:
     metadata:
       annotations:

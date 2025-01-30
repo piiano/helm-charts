@@ -41,6 +41,10 @@ replicaCount: 1
 updateStrategy:
   type: RollingUpdate
 
+## @param minReadySeconds Minimum number of seconds for the pod to be considered available.
+##
+minReadySeconds: 10
+
 ## Piiano Vault Server image version.
 ## ref: https://hub.docker.com/r/piiano/pvault-server/tags
 image:
