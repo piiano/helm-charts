@@ -38,7 +38,7 @@ Create chart name and version as used by the chart label.
 */}}
 {{- define "pvault-server.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- end }}
+{{- end -}}
 
 {{/*
 Source: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_names.tpl
@@ -86,38 +86,38 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Create the name of the service account to use
 */}}
 {{- define "pvault-server.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "pvault-server.fullname" .) (tpl .Values.serviceAccount.name .) }}
-{{- else }}
-{{- default "default" (tpl .Values.serviceAccount.name .) }}
-{{- end }}
-{{- end }}
+{{- if .Values.serviceAccount.create -}}
+{{- default (include "pvault-server.fullname" .) (tpl .Values.serviceAccount.name .) -}}
+{{- else -}}
+{{- default "default" (tpl .Values.serviceAccount.name .) -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Get the name of an existing secret, or use default.
 */}}
-{{- define "pvault-server.secrets.name" }}
-{{- default (include "pvault-server.fullname" .context) (tpl .existingSecret .context) }}
-{{- end }}
+{{- define "pvault-server.secrets.name" -}}
+{{- default (include "pvault-server.fullname" .context) (tpl .existingSecret .context) -}}
+{{- end -}}
 
 {{/*
 Get the key of an existing secret, or use default.
 */}}
-{{- define "pvault-server.secrets.key" }}
-{{- default .defaultSecretKey (tpl .existingSecretKey .context) }}
-{{- end }}
+{{- define "pvault-server.secrets.key" -}}
+{{- default .defaultSecretKey (tpl .existingSecretKey .context) -}}
+{{- end -}}
 
 {{/*
 Get the a volume template for a secret.
 */}}
-{{- define "pvault-server.secrets.volume" }}
+{{- define "pvault-server.secrets.volume" -}}
 - name: {{ .secretName }}
   secret:
     secretName: {{ include "pvault-server.secrets.name" . }}
     items:
     - key: {{ include "pvault-server.secrets.key" . }}
       path: content
-{{- end }}
+{{- end -}}
 
 {{/*
 Source: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_tplvalues.tpl

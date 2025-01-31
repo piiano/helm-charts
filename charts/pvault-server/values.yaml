@@ -290,6 +290,16 @@ pdb:
   minAvailable: ""
   maxUnavailable: ""
 
+## @param priorityClassName Pod priority class.
+## Ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+##
+priorityClassName: ""
+
+## @param topologySpreadConstraints Pod topology spread constraints.
+## https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
+##
+topologySpreadConstraints: []
+
 ## @param nodeSelector Node labels for pod assignment.
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
 ##
