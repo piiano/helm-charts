@@ -109,8 +109,16 @@ spec:
             failureThreshold: {{ .Values.startupProbe.failureThreshold }}
           {{- end }}
           resources: {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.pvault.log.datadogAPMEnable .Values.dbCARootCertificate .Values.pvault.directEnvVars }}
           env:
+            {{- /* If CPU and memory limits are not specified for a container, and you use the downward API to try to expose that information, then the kubelet defaults to exposing the maximum allocatable value for CPU and memory based on the node allocatable calculation. */}}
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  resource: {{ ternary "limits.cpu" "requests.cpu" (empty .Values.resources.requests.cpu) }}
+            - name: GOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
             {{- if .Values.pvault.log.datadogAPMEnable }}
             - name: DD_AGENT_HOST
               valueFrom:
@@ -125,7 +133,6 @@ spec:
             - name: {{ $key }}
               value: {{ $value }}
             {{- end }}
-          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "pvault-server.fullname" . }}-env-vars
