@@ -32,8 +32,7 @@ spec:
       labels: {{- include "pvault-server.labels.standard" (dict "customLabels" (include "pvault-server.pod.labels" .) "context" .) | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "pvault-server.serviceAccountName" . }}
       automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
@@ -44,6 +43,21 @@ spec:
       {{- if .Values.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.nodeSelector "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.affinity "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations: {{- include "pvault-server.tplvalues.render" (dict "value" .Values.tolerations "context" .) | nindent 8 }}
+      {{- end }}
       {{- if .Values.podSecurityContext.enabled }}
       securityContext: {{- include "pvault-server.compatibility.renderSecurityContext" (dict "secContext" .Values.podSecurityContext "context" .) | nindent 8 }}
       {{- end }}
@@ -52,7 +66,7 @@ spec:
           {{- if .Values.securityContext.enabled }}
           securityContext: {{- include "pvault-server.compatibility.renderSecurityContext" (dict "secContext" .Values.securityContext "context" .) | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: pvault-port
@@ -94,78 +108,65 @@ spec:
             successThreshold: {{ .Values.startupProbe.successThreshold }}
             failureThreshold: {{ .Values.startupProbe.failureThreshold }}
           {{- end }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.pvault.log.datadogAPMEnable .Values.dbCARootCertificate .Values.pvault.directEnvVars  }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- if or .Values.pvault.log.datadogAPMEnable .Values.dbCARootCertificate .Values.pvault.directEnvVars }}
           env:
-          {{- if .Values.pvault.log.datadogAPMEnable }}
+            {{- if .Values.pvault.log.datadogAPMEnable }}
             - name: DD_AGENT_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
-          {{- end }}
-          {{- with .Values.dbCARootCertificate }}
+            {{- end }}
+            {{- if .Values.dbCARootCertificate }}
             - name: PGSSLROOTCERT
               value: /etc/pvault/certs/db-ca-bundle.pem
-          {{- end }}
-          {{- range $key, $value := .Values.pvault.directEnvVars }}
+            {{- end }}
+            {{- range $key, $value := .Values.pvault.directEnvVars }}
             - name: {{ $key }}
               value: {{ $value }}
-          {{- end }}
+            {{- end }}
           {{- end }}
           envFrom:
-          - configMapRef:
-              name: {{ include "pvault-server.fullname" . }}-env-vars
+            - configMapRef:
+                name: {{ include "pvault-server.fullname" . }}-env-vars
           volumeMounts:
-          - name: pvault-system-toml-volume
-            mountPath: /etc/pvault/conf.d
-          - name: secret-db-password-volume
-            mountPath: /etc/pvault/secrets/db_password
-          - name: secret-admin-api-key-volume
-            mountPath: /etc/pvault/secrets/api_key
-          - name: secret-license-volume
-            mountPath: /etc/pvault/secrets/license
-          {{- if $hasKmsSeed }}
-          - name: secret-kms-seed-volume
-            mountPath: /etc/pvault/secrets/kms_seed
-          {{- end }}
-          {{- if $hasKmsExportSeed }}
-          - name: secret-kms-export-seed-volume
-            mountPath: /etc/pvault/secrets/kms_export_seed
-          {{- end }}
-          {{- if .Values.dbCARootCertificate}}
-          - name: db-ca-cert-volume
-            mountPath: /etc/pvault/certs
-          {{- end }}
+            - name: pvault-system-toml-volume
+              mountPath: /etc/pvault/conf.d
+            - name: secret-db-password-volume
+              mountPath: /etc/pvault/secrets/db_password
+            - name: secret-admin-api-key-volume
+              mountPath: /etc/pvault/secrets/api_key
+            - name: secret-license-volume
+              mountPath: /etc/pvault/secrets/license
+            {{- if $hasKmsSeed }}
+            - name: secret-kms-seed-volume
+              mountPath: /etc/pvault/secrets/kms_seed
+            {{- end }}
+            {{- if $hasKmsExportSeed }}
+            - name: secret-kms-export-seed-volume
+              mountPath: /etc/pvault/secrets/kms_export_seed
+            {{- end }}
+            {{- if .Values.dbCARootCertificate}}
+            - name: db-ca-cert-volume
+              mountPath: /etc/pvault/certs
+            {{- end }}
       volumes:
-      - name: pvault-system-toml-volume
-        configMap:
-          name:  {{ include "pvault-server.fullname" . }}-variables
-      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-db-password-volume" "existingSecret" .Values.pvault.db.existingPasswordSecret "existingSecretKey" .Values.pvault.db.existingPasswordSecretKey "defaultSecretKey" "pvault-db-password" "context" .) | indent 6 }}
-      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-admin-api-key-volume" "existingSecret" .Values.pvault.app.existingAdminAPIKeySecret "existingSecretKey" .Values.pvault.app.existingAdminAPIKeySecretKey "defaultSecretKey" "admin-api-key" "context" .) | indent 6 }}
-      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-license-volume" "existingSecret" .Values.pvault.app.existingLicenseSecret "existingSecretKey" .Values.pvault.app.existingLicenseSecretKey "defaultSecretKey" "license" "context" .) | indent 6 }}
-      {{- if $hasKmsSeed }}
-      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-kms-seed-volume" "existingSecret" .Values.pvault.kms.existingSeedSecret "existingSecretKey" .Values.pvault.kms.existingSeedSecretKey "defaultSecretKey" "kms-seed" "context" .) | indent 6 }}
-      {{- end }}
-      {{- if $hasKmsExportSeed }}
-      {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-kms-export-seed-volume" "existingSecret" .Values.pvault.kms.existingExportSeedSecret "existingSecretKey" .Values.pvault.kms.existingExportSeedSecretKey "defaultSecretKey" "kms-export-seed" "context" .) | indent 6 }}
-      {{- end }}
-      {{- if .Values.dbCARootCertificate}}
-      - name: db-ca-cert-volume
-        configMap:
-          name:  {{ include "pvault-server.fullname" . }}-db-ca-cert
-      {{- end }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - name: pvault-system-toml-volume
+          configMap:
+            name: {{ include "pvault-server.fullname" . }}-variables
+        {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-db-password-volume" "existingSecret" .Values.pvault.db.existingPasswordSecret "existingSecretKey" .Values.pvault.db.existingPasswordSecretKey "defaultSecretKey" "pvault-db-password" "context" .) | nindent 8 }}
+        {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-admin-api-key-volume" "existingSecret" .Values.pvault.app.existingAdminAPIKeySecret "existingSecretKey" .Values.pvault.app.existingAdminAPIKeySecretKey "defaultSecretKey" "admin-api-key" "context" .) | nindent 8 }}
+        {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-license-volume" "existingSecret" .Values.pvault.app.existingLicenseSecret "existingSecretKey" .Values.pvault.app.existingLicenseSecretKey "defaultSecretKey" "license" "context" .) | nindent 8 }}
+        {{- if $hasKmsSeed }}
+        {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-kms-seed-volume" "existingSecret" .Values.pvault.kms.existingSeedSecret "existingSecretKey" .Values.pvault.kms.existingSeedSecretKey "defaultSecretKey" "kms-seed" "context" .) | nindent 8 }}
+        {{- end }}
+        {{- if $hasKmsExportSeed }}
+        {{- include "pvault-server.secrets.volume" (dict "secretName" "secret-kms-export-seed-volume" "existingSecret" .Values.pvault.kms.existingExportSeedSecret "existingSecretKey" .Values.pvault.kms.existingExportSeedSecretKey "defaultSecretKey" "kms-export-seed" "context" .) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.dbCARootCertificate}}
+        - name: db-ca-cert-volume
+          configMap:
+            name: {{ include "pvault-server.fullname" . }}-db-ca-cert
+        {{- end }}
   selector:
     matchLabels: {{- include "pvault-server.labels.matchLabels" (dict "customLabels" (include "pvault-server.pod.labels" .) "context" .) | nindent 6 }}
