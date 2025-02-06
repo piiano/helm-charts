@@ -104,6 +104,6 @@ metadata:
 data:
   PVAULT_LOG_DATADOG_ENABLE: {{ required "A valid .Values.pvault.log.datadogEnable is required" .Values.pvault.log.datadogEnable | quote }}
   PVAULT_SENTRY_ENABLE: {{ required "A valid .Values.pvault.sentry.enable is required" .Values.pvault.sentry.enable | quote }}
-{{- with .Values.pvault.extraEnvVars }}
-  {{- toYaml . | nindent 2 }}
-{{- end }}
+  {{- if .Values.pvault.extraEnvVars }}
+  {{- include "pvault-server.tplvalues.render" (dict "value" .Values.pvault.extraEnvVars "context" .) | nindent 2 }}
+  {{- end }}

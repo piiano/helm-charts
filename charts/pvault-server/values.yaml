@@ -337,12 +337,12 @@ pvault:
     ## @param pvault.db.password Password for the database. If `postgresql.enabled` is `true` then this value is ignored in favor of `postgresql.auth.password`.
     ##
     password: ""
-    ## @param pvault.db.existingPasswordSecret The name of an existing secret containing the DB password.
+    ## @param pvault.db.existingPasswordSecret The name of an existing secret containing the DB password. Supports templating.
     ## Note: Must contain a key as specified by existingPasswordSecretKey.
     ## Note: If set, the `password` parameter is ignored.
     ##
     existingPasswordSecret: ""
-    ## @param pvault.db.existingPasswordSecretKey The key in an existing secret that contains the DB password.
+    ## @param pvault.db.existingPasswordSecretKey The key in an existing secret that contains the DB password. Supports templating.
     ## Note: Only used when existingPasswordSecret is set.
     ##
     existingPasswordSecretKey: ""
@@ -390,12 +390,12 @@ pvault:
     ## @param pvault.app.adminAPIKey The admin API key for authentication.
     ##
     adminAPIKey: pvaultauth
-    ## @param pvault.app.existingAdminAPIKeySecret The name of an existing secret containing the admin API key.
+    ## @param pvault.app.existingAdminAPIKeySecret The name of an existing secret containing the admin API key. Supports templating.
     ## Note: Must contain a key as specified by existingAdminAPIKeySecretKey.
     ## Note: If set, the `adminAPIKey` parameter is ignored.
     ##
     existingAdminAPIKeySecret: ""
-    ## @param pvault.app.existingAdminAPIKeySecretKey The key in an existing secret that contains the admin API key.
+    ## @param pvault.app.existingAdminAPIKeySecretKey The key in an existing secret that contains the admin API key. Supports templating.
     ## Note: Only used when existingAdminAPIKeySecret is set.
     ##
     existingAdminAPIKeySecretKey: ""
@@ -418,12 +418,12 @@ pvault:
     ## ref: https://piiano.com/docs/guides/configure/environment-variables#piiano-vault-license
     ##
     license: ""
-    ## @param pvault.app.existingLicenseSecret The name of an existing secret containing the license.
+    ## @param pvault.app.existingLicenseSecret The name of an existing secret containing the license. Supports templating.
     ## Note: Must contain a key as specified by existingLicenseSecretKey.
     ## Note: If set, the `license` parameter is ignored.
     ##
     existingLicenseSecret: ""
-    ## @param pvault.app.existingLicenseSecretKey The key in an existing secret that contains the license.
+    ## @param pvault.app.existingLicenseSecretKey The key in an existing secret that contains the license. Supports templating.
     ## Note: Only used when existingLicenseSecret is set.
     ##
     existingLicenseSecretKey: ""
@@ -524,7 +524,7 @@ pvault:
   ##
   startupIAMFile: ""
   ## @param pvault.startupCollectionsFile Vault startup file for schema configuration.
-  ## ref:https://piiano.com/docs/guides/configure/custom-configuration-file#collections-configuration-file
+  ## ref: https://piiano.com/docs/guides/configure/custom-configuration-file#collections-configuration-file
   ##
   startupCollectionsFile: ""
   ## @param pvault.startupDataTypesFile Vault startup file for data types configuration.
@@ -532,11 +532,30 @@ pvault:
   ##
   startupDataTypesFile: ""
 
-  ## @param pvault.extraEnvVars Overriding environment variables.
+  ## @param pvault.extraEnvVars Extra Key/Value env variables injected into the `<release-name>-env-vars` ConfigMap, which is consumed by the container using `envFrom`. Not recommended for secrets, secrets should be added with `existing*Secret` properties where supported, other non-standardized secrets can be added with `extraEnv` or `extraEnvFromSecret`. Supports templating.
   ##
   extraEnvVars: {}
 
-  ## @param pvault.directEnvVars Directly injected environment variables. WARNING: Directly setting environment variables through this parameter is not recommended. This should only be used if ConfigMaps cannot be used due to a technical reason. Usage of this parameter bypasses ConfigMaps and injects environment variables directly into the Deployment, which may not follow best practices.
+  ## @param pvault.extraEnv List of extra container `env` objects, use `existing*Secret` properties for secrets where supported. Supports templating.
+  ## ref: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/
+  ## e.g:
+  ## extraEnv:
+  ##   - name: MY_ENV_NAME
+  ##     valueFrom:
+  ##       secretKeyRef:
+  ##         name: my-secret-name
+  ##         key: my-secret-key
+  extraEnv: []
+
+  ## @param pvault.extraEnvFromCM Extra ConfigMap name consumed by container `envFrom`, supports templating.
+  ##
+  extraEnvFromCM: ""
+
+  ## @param pvault.extraEnvFromSecret Extra Secret name consumed by container `envFrom`, use `existing*Secret` properties for secrets where supported. Supports templating.
+  ##
+  extraEnvFromSecret: ""
+
+  ## @param pvault.directEnvVars (DEPRECATED) Will be removed in a future version, use `extraEnvVars` or `extraEnv` instead. Directly injected Pod environment variables. Not recommended for secrets.
   ##
   directEnvVars: {}
 
