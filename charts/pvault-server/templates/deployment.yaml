@@ -130,12 +130,23 @@ spec:
               value: /etc/pvault/certs/db-ca-bundle.pem
             {{- end }}
             {{- range $key, $value := .Values.pvault.directEnvVars }}
-            - name: {{ $key }}
-              value: {{ $value }}
+            - name: {{ tpl $key $ | quote }}
+              value: {{ tpl $value $ | quote }}
+            {{- end }}
+            {{- if .Values.pvault.extraEnv }}
+            {{- include "pvault-server.tplvalues.render" (dict "value" .Values.pvault.extraEnv "context" .) | nindent 12 }}
             {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "pvault-server.fullname" . }}-env-vars
+            {{- if .Values.pvault.extraEnvFromCM }}
+            - configMapRef:
+                name: {{ include "pvault-server.tplvalues.render" (dict "value" .Values.pvault.extraEnvFromCM "context" .) }}
+            {{- end }}
+            {{- if .Values.pvault.extraEnvFromSecret }}
+            - secretRef:
+                name: {{ include "pvault-server.tplvalues.render" (dict "value" .Values.pvault.extraEnvFromSecret "context" .) }}
+            {{- end }}
           volumeMounts:
             - name: pvault-system-toml-volume
               mountPath: /etc/pvault/conf.d
