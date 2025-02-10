@@ -72,14 +72,14 @@ data:
     custom_types_enable = {{ .Values.pvault.features.customTypesEnable }}
 
     [kms]
-    {{- if kindIs "bool" .Values.pvault.kms.allow_local }}
-    enable = {{ .Values.pvault.kms.allow_local }}
-    {{- end }}
     {{- if .Values.pvault.kms.uri }}
-    uri = {{ tpl .Values.pvault.kms.uri . | quote }}
+    uri         = {{ tpl .Values.pvault.kms.uri . | quote }}
     {{- end }}
     {{- if .Values.pvault.kms.exportUri }}
-    export_uri = {{ tpl .Values.pvault.kms.exportUri . | quote }}
+    export_uri  = {{ tpl .Values.pvault.kms.exportUri . | quote }}
+    {{- end }}
+    {{- if kindIs "bool" .Values.pvault.kms.allow_local }}
+    allow_local = {{ .Values.pvault.kms.allow_local }}
     {{- end }}
 
     [log]
