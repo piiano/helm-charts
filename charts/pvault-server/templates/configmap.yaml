@@ -1,15 +1,15 @@
 {{- $dbHost := "" }}
 {{- $dbName := "" }}
 {{- $dbUser := "" }}
-{{- /* If dev psql is enabled, override Vault configurations. Otherwise, enforce them */}}
+{{- /* If dev psql is enabled, override Vault configurations */}}
 {{- if .Values.postgresql.enabled }}
-{{- $dbHost = printf "%s-postgresql" .Chart.Name | quote }}
-{{- $dbName = default "pvault" (tpl .Values.postgresql.auth.database .) | quote }}
-{{- $dbUser = default "pvault" (tpl .Values.postgresql.auth.username .) | quote }}
+{{- $dbHost = printf "%s-postgresql" .Chart.Name }}
+{{- $dbName = default "pvault" (tpl .Values.postgresql.auth.database .) }}
+{{- $dbUser = default "pvault" (tpl .Values.postgresql.auth.username .) }}
 {{- else }}
-{{- $dbHost = required "A valid .Values.pvault.db.hostname entry required!" (tpl .Values.pvault.db.hostname .) | quote }}
-{{- $dbName = required "A valid .Values.pvault.db.name entry required!" (tpl .Values.pvault.db.name .) | quote }}
-{{- $dbUser = required "A valid .Values.pvault.db.user entry required!" (tpl .Values.pvault.db.user .) | quote }}
+{{- $dbHost = tpl .Values.pvault.db.hostname . }}
+{{- $dbName = tpl .Values.pvault.db.name . }}
+{{- $dbUser = tpl .Values.pvault.db.user . }}
 {{- end }}
 kind: ConfigMap
 apiVersion: v1
@@ -30,19 +30,25 @@ data:
     devmode = {{ .Values.pvault.devmode }}
 
     [db]
-    hostname    = {{ $dbHost }}
-    name        = {{ $dbName }}
-    user        = {{ $dbUser }}
+    {{- if $dbHost }}
+    hostname    = {{ $dbHost | quote }}
+    {{- end }}
+    {{- if $dbName }}
+    name        = {{ $dbName | quote }}
+    {{- end }}
+    {{- if $dbUser }}
+    user        = {{ $dbUser | quote }}
+    {{- end }}
     port        = {{ .Values.pvault.db.port }}
     {{- if kindIs "bool" .Values.pvault.db.requireTLS }}
     require_tls = {{ .Values.pvault.db.requireTLS }}
-    {{ end }}
+    {{- end }}
 
     [service]
     listen_addr             = "0.0.0.0:8123"
     {{- if kindIs "bool" .Values.pvault.app.adminMayReadData }}
     admin_may_read_data     = {{ .Values.pvault.app.adminMayReadData }}
-    {{ end }}
+    {{- end }}
     timeout_seconds         = {{ .Values.pvault.app.timeoutSeconds }}
     cache_refresh_interval_seconds = {{ .Values.pvault.app.cacheRefreshIntervalSeconds }}
     default_page_size       = {{ .Values.pvault.app.defaultPageSize }}
@@ -53,7 +59,7 @@ data:
     [tls]
     {{- if kindIs "bool" .Values.pvault.tls.enable }}
     enable = {{ .Values.pvault.tls.enable }}
-    {{ end }}
+    {{- end }}
     cert_file   = {{ .Values.pvault.tls.certFile | quote }}
     key_file    = {{ .Values.pvault.tls.keyFile | quote }}
     selfsigned  = {{ .Values.pvault.tls.selfsigned }}
@@ -66,11 +72,15 @@ data:
     custom_types_enable = {{ .Values.pvault.features.customTypesEnable }}
 
     [kms]
-    uri   = {{ tpl .Values.pvault.kms.uri . | quote }}
-    export_uri  = {{ tpl .Values.pvault.kms.exportUri . | quote }}
     {{- if kindIs "bool" .Values.pvault.kms.allow_local }}
     enable = {{ .Values.pvault.kms.allow_local }}
-    {{ end }}
+    {{- end }}
+    {{- if .Values.pvault.kms.uri }}
+    uri = {{ tpl .Values.pvault.kms.uri . | quote }}
+    {{- end }}
+    {{- if .Values.pvault.kms.exportUri }}
+    export_uri = {{ tpl .Values.pvault.kms.exportUri . | quote }}
+    {{- end }}
 
     [log]
     level               = {{ .Values.pvault.log.level | quote }}
