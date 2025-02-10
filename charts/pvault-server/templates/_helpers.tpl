@@ -154,3 +154,37 @@ Usage:
 {{- end -}}
 {{ $dst | toYaml }}
 {{- end -}}
+
+{{/*
+Validates if a key (name) exists in an ENV like object, K/V and list of env are supported.
+Usage:
+{{ include "pvault-server.env.exists" (dict "key" "MY_VAR" "context" .Values.pvault.extraEnvVars) }}
+*/}}
+{{- define "pvault-server.env.exists" -}}
+{{- /* Key/Value env vars */}}
+{{- if kindIs "map" $.context -}}
+  {{- if hasKey .context .key -}}
+    {{- true -}}
+  {{- end -}}
+{{- /* List of env objects */}}
+{{- else if kindIs "slice" $.context -}}
+  {{- $result := list -}}
+  {{- range $k, $v := $.context -}}
+    {{- $result = append $result (eq $v.name $.key) -}}
+  {{- end -}}
+  {{- if (has true $result) -}}
+    {{- true -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validates if a key (name) exists in ENV vars for the Vault container.
+Usage:
+{{ include "pvault-server.vault.env.exists" (dict "key" "MY_VAR" "context" $) }}
+*/}}
+{{- define "pvault-server.vault.env.exists" -}}
+{{- if or (include "pvault-server.env.exists" (dict "key" $.key "context" $.context.Values.pvault.extraEnvVars)) (include "pvault-server.env.exists" (dict "key" $.key "context" $.context.Values.pvault.extraEnv)) -}}
+{{- true -}}
+{{- end -}}
+{{- end -}}
