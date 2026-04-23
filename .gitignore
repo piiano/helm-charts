@@ -6,6 +6,7 @@
 
 # IDE
 .idea
+.vscode
 
 # Env
 .env.local
