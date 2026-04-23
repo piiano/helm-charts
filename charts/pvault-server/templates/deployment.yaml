@@ -115,10 +115,12 @@ spec:
               valueFrom:
                 resourceFieldRef:
                   resource: {{ ternary "limits.cpu" "requests.cpu" (empty .Values.resources.requests.cpu) }}
+                  divisor: '0'
             - name: GOMEMLIMIT
               valueFrom:
                 resourceFieldRef:
                   resource: limits.memory
+                  divisor: '0'
             {{- if .Values.pvault.log.datadogAPMEnable }}
             - name: DD_AGENT_HOST
               valueFrom:
